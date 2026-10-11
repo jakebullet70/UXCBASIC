@@ -106,8 +106,11 @@ NAMESPACE STR
 
 
 sub InStrRev(s$, f$, start) as byte
+    
+    '--- testing out new keywords (works fine)
+    '--- some day will make into ASM
 
-    dim sa, fa, sd, fd as word
+    dim sa as word, fa as word, sd as word, fd as word
     dim sl, fl, startPos, i, j, ch, matched
 
     sa = AddrOf(s$)
@@ -116,7 +119,7 @@ sub InStrRev(s$, f$, start) as byte
     sl = ContentsAt(sa + 1)
     fl = ContentsAt(fa + 1)
 
-    if fl = 0 then return 0
+    if fl = 0  then return 0
     if fl > sl then return 0
 
     sd = sa + 2
@@ -153,27 +156,6 @@ sub InStrRev(s$, f$, start) as byte
 
 end sub
 
-
-  SUB InStrRev(S$, F$, START) '--- later to ASM
-      DIM LF,LS, J, I, Match
-      LF = LEN(F$)
-      LS = LEN(S$)
-
-      IF LF = 0 THEN RETURN 0
-      IF LF > LS THEN RETURN 0
-
-      IF Start <= 0 OR Start > LS THEN Start = LS
-
-      FOR I = Start - LF + 1 TO 1 STEP -1
-        Match = 0
-        FOR J = 1 TO LF
-            IF MID$(S$, I + J - 1, 1) <> MID$(F$, J, 1) THEN
-                RETURN 0
-            END IF
-        NEXT
-        IF Match THEN RETURN I
-      NEXT
-  END SUB
 
 END NAMESPACE
 
