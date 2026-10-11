@@ -1,2 +1,2 @@
 # UXCBASIC
-8bit Compiled System BASIC
+8bit Compiled System BASIC for 65c02 systems, hope we can get this a home...
