@@ -104,8 +104,17 @@ NAMESPACE STR
   SUB RPAD(S$)
   END SUB
 
+  SUB EndWith(S1$,S2$) as BYTE
+  END SUB
+  SUB StartsWith(S1$,S2$) as BYTE
+  END SUB
 
-sub InStrRev(s$, f$, start) as byte
+  UPPER and LOWER on the string in place
+
+
+
+
+  sub InStrRev(s$, f$, start) as byte
     
     '--- testing out new keywords (works fine)
     '--- some day will make into ASM
