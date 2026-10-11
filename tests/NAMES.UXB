@@ -1,0 +1,9 @@
+' names: upper and lower case, _, digits, the same base with each mark
+DIM N, N%
+VAR my_count_2 AS WORD
+n = 7
+N% = 700
+MY_COUNT_2 = $BEEF
+print n; " "; n%; " "; My_Count_2
+LABEL_1:
+END

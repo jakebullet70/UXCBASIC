@@ -1,0 +1,30 @@
+' LOCALPOOL -- the locals of one level share a pool; a caller's locals outlive its calls
+SUB SUM%(N)
+  DIM TOTAL%, K
+  TOTAL% = 0
+  FOR K = 1 TO N
+    TOTAL% = TOTAL% + K
+  NEXT K
+  RETURN TOTAL%
+ENDSUB
+SUB TWICE%(N)
+  DIM L%(3)
+  L%(0) = N
+  L%(1) = N + N
+  RETURN L%(1)
+ENDSUB
+SUB NAMED$(N)
+  DIM S$ * 10
+  S$ = S$ + "N"
+  S$ = S$ + CHR$(64 + N)
+  RETURN S$
+ENDSUB
+SUB BOTH%(A, B)
+  DIM KEEP%
+  KEEP% = SUM%(A)
+  KEEP% = KEEP% + TWICE%(B)
+  RETURN KEEP% + SUM%(B)
+ENDSUB
+PRINT SUM%(10); TWICE%(7); BOTH%(4, 5)
+PRINT NAMED$(3); NAMED$(2)
+PRINT SUM%(3) + TWICE%(SUM%(4))

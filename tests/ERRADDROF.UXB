@@ -1,0 +1,2 @@
+DIM X, P%
+P% = AddrOf(X

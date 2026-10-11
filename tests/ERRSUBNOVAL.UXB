@@ -1,0 +1,4 @@
+DIM X%
+SUB F()
+ENDSUB
+X% = F()

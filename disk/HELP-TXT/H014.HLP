@@ -1,0 +1,19 @@
+@FOR
+.
+=FOR
+.
+.FOR v = a TO b [STEP k] ... NEXT [v]. The variable is a BYTE or a WORD, and
+.STEP is a constant, 1 when it is left out. STEP -1 counts down.
+.
+:FOR I = 0 TO 255
+:  POKE $0400 + I, I
+:NEXT
+:FOR W% = 1000 TO 0 STEP -100
+:  PRINT W%
+:NEXT W%
+.
+.  - The body runs zero times when the range is empty.
+.  - The test is made before the step, so FOR I = 0 TO 255 ends, and I never
+.    wraps.
+.  - After the loop, v holds the last value the body saw: 255 above.
+.  - The TO value is read once, at the start.

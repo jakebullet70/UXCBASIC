@@ -1,0 +1,2 @@
+DIM N
+ASM $A9, N

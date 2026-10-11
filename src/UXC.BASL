@@ -1,0 +1,228 @@
+#SAVEAS "@:UXC.SRC.PRG"
+#REM 0
+#SYMFILE "@:UXC.SRC.SYM"
+#GPC SHARED
+#GPC OBJECT "UXC.PRG"
+#GPC MAP "UXC.MAP"
+#INCLUDE "GPC-BASIC/GPB.INC.BL"
+#INCLUDE "UXC.TPL.BL"
+#INCLUDE "UXC-DEFS.BL"
+## ============================================================================
+## UXC -- the UXCBASIC compiler, v1, in GPC. docs/UXCBASIC.PLAN.md is the design.
+##
+## UXC.INPUT names the source and the result file. The source is read a line at a
+## time, and each statement copies template records out of UXC.TPL.BIN into the
+## code buffer. At the end of the source the link step adds the runtime routines,
+## the strings and the variables, resolves every fixup, and the PRG is written.
+##
+## The modules, each a file of subroutines:
+##   UXC-LEX.BL    the source file, and the tokens of a line
+##   UXC-SYM.BL    the symbol table, in banked RAM
+##   UXC-CODE.BL   the template table, the code buffer, the strings, the fixups; EMIT
+##   UXC-LINK.BL   the link step, and the PRG writer
+##   UXC-EXPR.BL   expressions
+##   UXC-STMT.BL   the statements
+##   UXC-COND.BL   jumps and conditions
+##   UXC-FLOW.BL   IF and the loops
+##   UXC-SUB.BL    SUB, ENDSUB, RETURN and calls
+##   UXC-NAME.BL   scopes: finding a name, NAMESPACE, BIND, the reserved words
+##   UXC-STR.BL    strings: DIM, assignment, +, the compares, the functions
+## UXC.TPL.BL is written by tpl/MKTPL.PY: the id of each template record.
+##
+## The source is read twice. The first pass declares every namespace, and every SUB from its
+## header, so a call may come before its SUB. The second compiles.
+##
+## The first error stops the compile. It prints ?<ERROR> IN <line> and the line,
+## and goes into the result file too.
+## ============================================================================
+## The arrays come first in the text: GPC gives an array used before its DIM an implicit
+## one, and allows only 32 of those.
+    DIM SY.BANK%(K.SYM.BANKS - 1), CB.BANK%(K.CODE.BANKS - 1), FX.BANK%(K.FIX.BANKS - 1)
+    DIM EM.B%(255), EM.FO%(85), EM.FK%(85), EM.FG%(85), SL.S%(3), SL.V(3)
+    DIM EX.OP%(K.EX.MAX), EX.VK%(K.EX.MAX), EX.VS%(K.EX.MAX), EX.VT%(K.EX.MAX), EX.VV(K.EX.MAX)
+    DIM RT.ON%(TPL.COUNT), RT.L%(TPL.COUNT), RT.ADDR(TPL.COUNT)
+    DIM EX.JT(K.EX.MAX), EX.JF(K.EX.MAX), EX.OA(K.EX.MAX)
+    DIM NS.K%(K.NS.MAX), NS.NO(K.NS.MAX), NS.L$(K.NS.MAX), NS.P(K.NS.MAX), NS.SN%(K.NS.MAX)
+    DIM NS.TOP(K.NS.MAX), NS.EX(K.NS.MAX), NS.CT(K.NS.MAX), NS.FL(K.NS.MAX), NS.EL%(K.NS.MAX)
+    DIM NS.VA(K.NS.MAX), NS.VT%(K.NS.MAX), NS.LC%(K.NS.MAX), NS.LV(K.NS.MAX), NS.ST(K.NS.MAX)
+    DIM NS.VS%(K.NS.MAX)
+    DIM NS.NB%(K.NS.MAX), NS.HA(K.NS.MAX), HV.AD(K.NS.MAX), SB.SAVED.HIDDEN(K.NS.MAX)
+    DIM SB.CALL.RECORD(K.SB.DEPTH), SB.CALL.PARAMETERS(K.SB.DEPTH), SB.CALL.RESULT(K.SB.DEPTH)
+    DIM SB.CALL.ARGUMENT(K.SB.DEPTH), SB.CALL.STACKED%(K.SB.DEPTH)
+    DIM SB.SAVED.OPERATORS(K.SB.DEPTH), SB.SAVED.OPERATOR.BASE(K.SB.DEPTH)
+    DIM SB.SAVED.PARENTHESES(K.SB.DEPTH), SB.SAVED.CONDITION(K.SB.DEPTH), SG.CALLED$(K.SB.DEPTH)
+    DIM AS.LABEL.NAME$(K.ASM.LABELS - 1), AS.LABEL.AT(K.ASM.LABELS - 1)
+    DIM NM.ALIAS.NAME$(K.ALIASES - 1), NM.ALIAS.TARGET$(K.ALIASES - 1)
+    DIM AS.REFERENCE.NAME$(K.ASM.LABELS - 1), AS.REFERENCE.AT(K.ASM.LABELS - 1)
+    DIM AS.REFERENCE.KIND%(K.ASM.LABELS - 1), AS.REFERENCE.NO(K.ASM.LABELS - 1)
+    FOR NS.I = 0 TO K.NS.MAX : HV.AD(NS.I) = -1 : NEXT NS.I
+    NS.D = 0 : EX.CM = 0
+GOTO UXC.MAIN
+## ---- what stays in low memory ----
+## SYM, CODE and LINK execute BANK, which a region may not. LEX and BANKMGR are small, and
+## run before the regions are claimed.
+#INCLUDE "GPC-BASIC/BANKMGR.INC.BL"
+#INCLUDE "UXC-LEX.BL"
+#INCLUDE "UXC-SYM.BL"
+#INCLUDE "UXC-CODE.BL"
+#INCLUDE "UXC-LINK.BL"
+
+## ---- the rest runs from RAM banks ----
+## The p-code and the string and array space share low memory under the runtime, and with
+## all of it there the compiler ran out of memory at startup. Each region is 8K at most:
+## the expressions and the conditions in one, the statements in the second, the SUBs in
+## the third, the strings in the fourth, the assembler in the fifth.
+## GPC-BASIC/BANKED-OR-NOT.md has the rules. The two that shape the code here:
+##   A GOTO into a region from outside it is refused, so a jump from one region to the
+##   other is GOSUB target : RETURN.
+##   A GOTO out of a region to a low routine that executes BANK would return into the
+##   region under the wrong bank, so those are GOSUB target : RETURN too.
+## UXC.MAIN claims the banks before anything asks BANKMGR for a free one.
+#DEFINE K.BANK.EXPR 20
+#DEFINE K.BANK.FLOW 21
+#DEFINE K.BANK.SUB 22
+#DEFINE K.BANK.STR 23
+#DEFINE K.BANK.ASM 24
+## The KERNAL's kbdbuf_put, called with ROM bank 0.
+#DEFINE K.KBDBUF.PUT $FEC3
+GOTO UXC.CODE.END
+GP.BANKED K.BANK.EXPR
+#INCLUDE "UXC-EXPR.BL"
+#INCLUDE "UXC-COND.BL"
+GP.ENDBANKED
+GP.BANKED K.BANK.FLOW
+#INCLUDE "UXC-STMT.BL"
+#INCLUDE "UXC-FLOW.BL"
+GP.ENDBANKED
+GP.BANKED K.BANK.SUB
+#INCLUDE "UXC-SUB.BL"
+#INCLUDE "UXC-NAME.BL"
+GP.ENDBANKED
+GP.BANKED K.BANK.STR
+#INCLUDE "UXC-STR.BL"
+GP.ENDBANKED
+GP.BANKED K.BANK.ASM
+#INCLUDE "UXC-ASM.BL"
+GP.ENDBANKED
+UXC.CODE.END:
+
+## UXC.BANK -- a free RAM bank in UXC.B.
+UXC.BANK:
+    GOSUB BANKMGR.GET.FREE.BANK
+    IF BANKMGR.BANK% = 0 THEN ER.M$ = "OUT OF RAM BANKS" : GOTO ER.STOP
+    UXC.B = BANKMGR.BANK%
+    RETURN
+
+## UI.READ -- UXC.INPUT: line 1 the source, line 2 the result file, line 3 the program to
+## load next. Either line ending is read: the whole file is gathered, then cut at CR and at LF.
+UI.READ:
+    UI.ALL$ = "" : OPEN 4, 8, 4, "UXC.INPUT,S,R"
+UI.READ.MORE:
+    LINPUT# 4, UI.PART$, 10 : UI.ST = ST
+    IF (UI.ST AND 2) <> 0 THEN GOTO UI.READ.DONE
+    UI.ALL$ = UI.ALL$ + UI.PART$ + CHR$(10)
+    IF (UI.ST AND 64) = 0 AND LEN(UI.ALL$) < 200 THEN GOTO UI.READ.MORE
+UI.READ.DONE:
+    CLOSE 4
+    UI.F = 0 : UI.SRC$ = "" : UI.RES$ = "" : UI.NEXT$ = "" : UI.ONE$ = ""
+    FOR UI.I = 1 TO LEN(UI.ALL$)
+        UI.C$ = MID$(UI.ALL$, UI.I, 1)
+        GP.IF UI.C$ = CHR$(13) OR UI.C$ = CHR$(10) THEN
+            IF UI.ONE$ <> "" AND UI.F = 2 THEN UI.NEXT$ = UI.ONE$ : UI.F = 3
+            IF UI.ONE$ <> "" AND UI.F = 1 THEN UI.RES$ = UI.ONE$ : UI.F = 2
+            IF UI.ONE$ <> "" AND UI.F = 0 THEN UI.SRC$ = UI.ONE$ : UI.F = 1
+            UI.ONE$ = ""
+        GP.ELSE
+            UI.ONE$ = UI.ONE$ + UI.C$
+        GP.ENDIF
+    NEXT UI.I
+    IF UI.SRC$ = "" THEN ER.M$ = "NO SOURCE NAMED IN UXC.INPUT" : GOTO ER.STOP
+    ## The PRG is named after the source: HELLO.UXB writes HELLO.PRG.
+    UI.OBJ$ = UI.SRC$ : UI.DOT = 0
+    FOR UI.I = 1 TO LEN(UI.SRC$)
+        IF MID$(UI.SRC$, UI.I, 1) = "." THEN UI.DOT = UI.I
+        IF MID$(UI.SRC$, UI.I, 1) = "/" THEN UI.DOT = 0
+    NEXT UI.I
+    IF UI.DOT > 0 THEN UI.OBJ$ = LEFT$(UI.SRC$, UI.DOT - 1)
+    UI.OBJ$ = UI.OBJ$ + ".PRG"
+    RETURN
+
+## UI.RESULT -- one line into the result file, when UXC.INPUT named one:
+##   OK,<prg>,<bytes>    or    ERROR,<line>,<message>
+UI.RESULT:
+    IF UI.RES$ = "" THEN RETURN
+    OPEN 4, 8, 4, "@:" + UI.RES$ + ",S,W"
+    PRINT# 4, UI.LINE$ : CLOSE 4
+    RETURN
+
+## UI.CHAIN -- load UI.NEXT$ when UXC.INPUT named one, else END. The LOAD line goes on the
+## third screen row and the cursor goes home. END prints READY. on the second row, and the
+## first Return in the key buffer runs the LOAD line. RUN: and a Return follow it; the colon
+## keeps what is left on the screen row out of the RUN.
+UI.CHAIN:
+    IF UI.NEXT$ = "" THEN END
+    PRINT CHR$(147) : PRINT
+    PRINT "LOAD" + CHR$(34) + UI.NEXT$ + CHR$(34) + ",8,1" + CHR$(19);
+    UI.KEYS$ = CHR$(13) + "RUN:" + CHR$(13)
+    UI.ROM.BANK = PEEK(1)
+    POKE 1, 0
+    FOR UI.I = 1 TO LEN(UI.KEYS$)
+        UI.KEY = ASC(MID$(UI.KEYS$, UI.I, 1))
+        GP.CALL K.KBDBUF.PUT, UI.KEY
+    NEXT UI.I
+    POKE 1, UI.ROM.BANK
+    END
+
+ER.MISMATCH:
+    ER.M$ = "TYPE MISMATCH" : GOTO ER.STOP
+ER.SYNTAX:
+    ER.M$ = "SYNTAX ERROR"
+ER.STOP:
+    CLOSE 2 : CLOSE 3
+    GP.IF LX.INCLUDING <> 0 THEN
+        ER.M$ = ER.M$ + " (" + LX.NAME$ + " " + MID$(STR$(LX.NO), 2) + ")"
+        LX.NO = LX.SOURCE.NO
+    GP.ENDIF
+    GP.IF LX.NO > 0 THEN
+        PRINT "?" + ER.M$ + " IN " + MID$(STR$(LX.NO), 2)
+        PRINT LX.L$
+    GP.ELSE
+        PRINT "?"; ER.M$
+    GP.ENDIF
+    UI.LINE$ = "ERROR," + MID$(STR$(LX.NO), 2) + "," + ER.M$ : GOSUB UI.RESULT
+    GOTO UI.CHAIN
+
+## ---------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------
+
+
+UXC.MAIN:
+    PRINT "UXCBASIC 0.1"
+    LX.NO = 0 : UI.RES$ = ""
+    GOSUB UI.READ : GOSUB BANKMGR.INIT
+    ## The code regions, so that nothing is handed the compiler's own code as scratch.
+    IF GP.FN(BANKMGR.CLAIM.BANK, K.BANK.EXPR) = 0 THEN ER.M$ = "CODE BANK TAKEN" : GOTO ER.STOP
+    IF GP.FN(BANKMGR.CLAIM.BANK, K.BANK.FLOW) = 0 THEN ER.M$ = "CODE BANK TAKEN" : GOTO ER.STOP
+    IF GP.FN(BANKMGR.CLAIM.BANK, K.BANK.SUB) = 0 THEN ER.M$ = "CODE BANK TAKEN" : GOTO ER.STOP
+    IF GP.FN(BANKMGR.CLAIM.BANK, K.BANK.STR) = 0 THEN ER.M$ = "CODE BANK TAKEN" : GOTO ER.STOP
+    IF GP.FN(BANKMGR.CLAIM.BANK, K.BANK.ASM) = 0 THEN ER.M$ = "CODE BANK TAKEN" : GOTO ER.STOP
+    GOSUB TP.LOAD : GOSUB SY.INIT : GOSUB CB.INIT
+    LX.NAME$ = UI.SRC$ : GOSUB LX.OPEN
+    PRINT "COMPILING "; UI.SRC$
+    LK.ORG = K.ORG : VR.N = 0 : RT.N = 0 : BS.N = 0 : SM.ERRORS.ON = 1 : AS.BLOCK = 0 : NM.ENUM.RECORD = 0
+    GOSUB SB.SCAN : CLOSE 2 : GOSUB LX.OPEN
+    GP.SUB EMIT, T.STUB.ID : GP.SUB EMIT, T.START.ID : GOSUB LK.INIT.CALL
+UXC.LINE:
+    GOSUB LX.READ : IF LX.GOT = 0 THEN GOTO UXC.LINK
+    GOSUB SM.LINE  
+    GOTO UXC.LINE
+UXC.LINK:
+    CLOSE 2
+    GOSUB CT.OPEN : GOSUB SB.OPEN : GOSUB NM.OPEN : GOSUB AS.OPEN
+    GP.SUB EMIT, T.END.ID : LX.NO = 0
+    GOSUB LK.LINK : GOSUB LK.WRITE
+    ## The emulator's echo shows the file's bytes too, so start a fresh line.
+    PRINT : PRINT UI.OBJ$ + " " + MID$(STR$(CB.N + 2), 2) + " BYTES"
+    UI.LINE$ = "OK," + UI.OBJ$ + "," + MID$(STR$(CB.N + 2), 2) : GOSUB UI.RESULT
+    GOTO UI.CHAIN

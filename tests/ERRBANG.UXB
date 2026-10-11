@@ -1,0 +1,2 @@
+' ! is not a type mark: a name with no mark is a BYTE
+DIM A!

@@ -1,0 +1,94 @@
+//===============================================================
+//   UXCBASIC program
+//
+//
+//   DISKIO.UXB
+//===============================================================
+
+
+NAMESPACE IO
+  NAMESPACE PATH
+    
+    SUB MKDIR() AS BYTE
+    END SUB
+
+    SUB RMDIR() AS BYTE
+    END SUB
+
+    SUB COMBINE$(path$,f$) 
+    END SUB
+
+    sub GetRandomFilename$(path$)
+    end sub
+
+    sub GetTempPath$()
+    end sub 
+
+    sub ChangeExt$(pf$,ext$)
+        // NEEDS WORK!!!!  SUDO CODE!!!
+        DIM p = InStrRev(FileName$, ".")
+        IF p > 0 THEN
+            ChangeFileExt$ = LEFT$(FileName$, p - 1) + "." + NewExt$
+        ELSE
+            ChangeFileExt$ = FileName$ + "." + NewExt$
+        END IF
+    end sub
+
+
+  END NAMESPACE
+  NAMESPACE FILE
+    
+    BIND KILL DELETE
+    BIND OPEN OPEN 
+    BIND CLOSE CLOSE 
+    BIND RENAME NAME
+
+    SUB SIZE(pf$) AS word
+    END SUB
+
+    SUB COPY(f1$,F2$) AS word
+    END SUB
+
+    SUB MOVE(f1$,F2$) AS word
+    END SUB
+
+    sub name(old$,new$) as byte
+    end sub
+
+    SUB EXISTS(S$) AS BYTE  ' for now...  :)
+      DIM F% = OPEN(s$, O.READ)
+      IF F% = NOFILE RETURN FALSE
+      close #f
+      return true
+    END SUB
+
+    SUB DELETE(s$) AS byte
+    END SUB
+
+    SUB CREATE(s$) AS byte
+    END SUB
+
+
+  END NAMESPACE
+  NAMESPACE DIR
+    BIND KILL DELETE
+    BIND RMDIR IO.PATH.RMDIR
+    BIND MKDIR IO.PATH.MKDIR
+
+    SUB DELETE(s$) AS byte
+    END SUB
+
+    SUB CREATE(S$) AS BYTE  
+    END SUB 
+
+    SUB EXISTS(S$) AS BYTE  
+    END SUB
+    
+    SUB dir(path$,fspec$) AS word
+      '--- returns pointer   
+    END SUB
+
+
+  END NAMESPACE
+END NAMESPACE
+

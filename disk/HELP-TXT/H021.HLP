@@ -1,0 +1,87 @@
+@Subroutines
+.
+=SUBROUTINES
+.
+.SUB name(parameters) ... ENDSUB. ENDSUB can be written END SUB. A SUB is
+.called by its name and its brackets. CALL in front is optional. The brackets
+.are not: they make the name a call, even with no arguments.
+.
+:SUB SHOW(N)
+:  PRINT N
+:ENDSUB
+:SHOW(7)
+:CALL SHOW(7)
+.
+.A SUB with a value has a type, by its mark or by AS. RETURN gives the value,
+.and the SUB is used in an expression. A SUB name with no mark and no AS has
+.no value, so a SUB that returns a BYTE is written SUB F() AS BYTE.
+.
+:SUB MAX%(A%, B%)
+:  IF A% > B% THEN RETURN A%
+:  RETURN B%
+:ENDSUB
+:SUB HALF(N AS WORD) AS WORD
+:  RETURN N / 2
+:ENDSUB
+:DIM T%
+:T% = MAX%(3, HALF(100))
+.
+.A SUB that returns a STRING has the $ mark or AS STRING: SUB FIRST3$(S$) or
+.SUB WRAP(T AS STRING) AS STRING. Its value is assigned, printed, compared
+.and joined with + as any string is.
+.
+:DIM A$ * 20
+:SUB FIRST3$(S$)
+:  RETURN MID$(S$, 1, 3)
+:ENDSUB
+:A$ = FIRST3$("HELLO")
+:PRINT FIRST3$("WORLD") + "!"
+.
+.  - A parameter is a BYTE, a WORD or a STRING, by its mark or by AS. With
+.    neither it is a BYTE: SUB SHOW(N). An argument is worked into its
+.    parameter's type: a WORD into a BYTE parameter keeps its low byte. A
+.    STRING parameter has no size, and the SUB works on the caller's string.
+.    See Strings.
+.  - The number of arguments must match the parameters.
+.  - RETURN leaves the SUB at once. In a SUB with no value, RETURN has
+.    nothing after it.
+.  - A SUB with a value needs at least one RETURN with a value. Its end, when
+.    the body reaches it, gives 0, or "" in a STRING SUB.
+.  - A STRING result is at most 255 characters. An assignment cuts it to the
+.    size of the destination.
+.  - A STRING result passed to a SUB is passed as a copy.
+.  - A SUB may be called before it is written.
+.  - A SUB with a value may be called as a statement. The value is lost.
+.  - The main program jumps over a SUB, so a SUB can sit anywhere outside a
+.    block.
+.  - A SUB cannot call itself. A SUB that calls itself stops the compile with
+.    A SUB CANNOT CALL ITSELF.
+.  - SUBs cannot call each other. A loop of calls between SUBs, A calls B and
+.    B calls A or a longer loop, stops the compile with SUBS CALL EACH OTHER
+.    at the line of one of the calls.
+.
+=Locals
+.
+.Parameters, and names DIMed in the SUB, are the SUB's locals. A local with
+.the same name as a main program variable hides it inside the SUB. Main
+.program variables DIMed before the SUB can be used in it. Labels belong to
+.the SUB too, so no GOTO crosses into or out of one.
+.
+.  - A local does not keep its value between calls.
+.  - A BYTE or WORD local, and a local array, starts undefined. Set it before
+.    you read it.
+.  - A local string is set empty each time its DIM line runs.
+.  - Only the SUB itself can name its locals. Inside SHOW, SHOW.N is N.
+.    Outside SHOW, PRINT SHOW.N stops the compile with LOCAL TO A SUB:
+.    SHOW.N.
+.  - The locals of one SUB take at most 16384 bytes. The DIM that passes it
+.    stops the compile with LOCALS TOO BIG.
+.  - The SUBs of one level of the call graph share the memory of their
+.    locals. The compiler does not see a call through a pointer or SYS. A SUB
+.    called that way may share that memory with a SUB that is running.
+.  - The main program's variables are not locals. Each has its own address
+.    and keeps its value.
+.
+=SEE ALSO
+.
+>14|Strings

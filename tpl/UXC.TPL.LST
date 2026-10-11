@@ -1,0 +1,3402 @@
+
+; 64tass Turbo Assembler Macro V1.60.3243 listing file
+; 64tass.exe -Wall -q --nostart -o C:\dev\UXCBASIC\tpl\UXC.TPL.BIN -L C:\dev\UXCBASIC\tpl\UXC.TPL.LST -l C:\dev\UXCBASIC\tpl\UXC.TPL.LBL C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+; Sun Oct 11 09:09:08 2026
+
+;Offset	;Hex		;Monitor	;Source
+
+;******  Processing input file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\MACROS.ASM
+
+=1					F_ABS   = 1             ; the word at the offset += the value of slot <arg>
+=2					F_LO    = 2             ; the byte at the offset = the low byte of slot <arg>
+=3					F_HI    = 3             ; the byte at the offset = the high byte of slot <arg>
+=4					F_SELF  = 4             ; the word at the offset += the address this record's code is placed at
+=5					F_REC   = 5             ; the word at the offset += the address of record <arg>
+=0					S0      = 0
+=1					S1      = 1
+=2					S2      = 2
+=3					S3      = 3
+=[]					tpl_all := []           ; the file offset of every record, in id order
+=[]					tpl_fix := []           ; the fixups of the open record
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\ZP.ASM
+
+=$22					ZP_PTR  = $22           ; word: a runtime pointer
+=$24					ZP_TMP  = $24           ; word: a runtime temporary
+=$26					ZP_SP   = $26           ; byte: the stack pointer at startup, for END
+=$27					ZP_MODE = $27           ; byte: $0372 at startup, the charset and the ISO bit, for the exit
+=$28					ZP_DST  = $28           ; word: the destination block of a string routine
+=$2a					ZP_FILE = $2A           ; byte: the handle the input comes from
+=$30					ESTK    = $30
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+>0000	55 58 54			        .text "UXT"
+>0003	01				        .byte 1                 ; the format version
+>0004	a2 00				        .word tpl_count
+>0006	d7 0d				        .word index
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\T-CORE.ASM
+
+.0008					T_STUB
+=0					rec_id  = len(tpl_all)
+=[8]					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0008	0c				        .byte rec_fix - rec_code
+>0009	00				        .byte (rec_end - rec_fix) / 3
+.000a					rec_code
+>000a	0b 08 0a 00			        .word $080b, 10
+>000e	9e 32 30 36 31 00		        .text $9e, "2061", 0
+>0014	00 00				        .word 0
+.0016					rec_fix
+.0016					rec_end
+.0016					T_START
+=1					rec_id  = len(tpl_all)
+=[8,22]					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0016	08				        .byte rec_fix - rec_code
+>0017	01				        .byte (rec_end - rec_fix) / 3
+.0018					rec_code
+.0018	ba		tsx		        tsx
+.0019	86 26		stx $26		        stx ZP_SP
+=[(4,5,48)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_INIT.rec_id)]
+.001b	20 00 00	jsr $0000	        jsr @w 0
+.001e	a2 00		ldx #$00	        ldx #0
+.0020					rec_fix
+>0020	04 05 30			        .byte f[0], f[1], f[2]
+.0023					rec_end
+.0023					T_END
+=2					rec_id  = len(tpl_all)
+=[8,22,35]				        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0023	03				        .byte rec_fix - rec_code
+>0024	01				        .byte (rec_end - rec_fix) / 3
+.0025					rec_code
+=[(1,5,49)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_EXIT.rec_id)]
+.0025	4c 00 00	jmp $0000	        jmp @w 0
+.0028					rec_fix
+>0028	01 05 31			        .byte f[0], f[1], f[2]
+.002b					rec_end
+.002b					T_LDB_C
+=3					rec_id  = len(tpl_all)
+=[8,22,35,43]				        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>002b	02				        .byte rec_fix - rec_code
+>002c	01				        .byte (rec_end - rec_fix) / 3
+.002d					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.002d	a9 00		lda #$00	        lda #0
+.002f					rec_fix
+>002f	01 02 00			        .byte f[0], f[1], f[2]
+.0032					rec_end
+.0032					T_LDW_C
+=4					rec_id  = len(tpl_all)
+=[8,22,35,43,50]			        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0032	04				        .byte rec_fix - rec_code
+>0033	02				        .byte (rec_end - rec_fix) / 3
+.0034					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0034	a9 00		lda #$00	        lda #0
+=[(1,2,0),(3,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.0036	a0 00		ldy #$00	        ldy #0
+.0038					rec_fix
+>0038	01 02 00			        .byte f[0], f[1], f[2]
+>003b	03 03 00			        .byte f[0], f[1], f[2]
+.003e					rec_end
+.003e					T_LDB_V
+=5					rec_id  = len(tpl_all)
+=[8,22,35,43,50,62]			        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>003e	03				        .byte rec_fix - rec_code
+>003f	01				        .byte (rec_end - rec_fix) / 3
+.0040					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0040	ad 00 00	lda $0000	        lda @w 0
+.0043					rec_fix
+>0043	01 01 00			        .byte f[0], f[1], f[2]
+.0046					rec_end
+.0046					T_LDW_V
+=6					rec_id  = len(tpl_all)
+=[8,22,35,43,50,62,70]			        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0046	06				        .byte rec_fix - rec_code
+>0047	02				        .byte (rec_end - rec_fix) / 3
+.0048					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0048	ad 00 00	lda $0000	        lda @w 0
+=[(1,1,0),(4,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.004b	ac 01 00	ldy $0001	        ldy @w 1
+.004e					rec_fix
+>004e	01 01 00			        .byte f[0], f[1], f[2]
+>0051	04 01 00			        .byte f[0], f[1], f[2]
+.0054					rec_end
+.0054					T_LDW_B
+=7					rec_id  = len(tpl_all)
+=[8,22,35,43,50,62,70,84]		        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0054	05				        .byte rec_fix - rec_code
+>0055	01				        .byte (rec_end - rec_fix) / 3
+.0056					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0056	ad 00 00	lda $0000	        lda @w 0
+.0059	a0 00		ldy #$00	        ldy #0
+.005b					rec_fix
+>005b	01 01 00			        .byte f[0], f[1], f[2]
+.005e					rec_end
+.005e					T_WIDEN
+=8					rec_id  = len(tpl_all)
+=[8,22,35,43,50,62,70,84,94]		        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>005e	02				        .byte rec_fix - rec_code
+>005f	00				        .byte (rec_end - rec_fix) / 3
+.0060					rec_code
+.0060	a0 00		ldy #$00	        ldy #0
+.0062					rec_fix
+.0062					rec_end
+.0062					T_STB_V
+=9					rec_id  = len(tpl_all)
+=[8,22,35,43,50,62,70,84,94,98]		        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0062	03				        .byte rec_fix - rec_code
+>0063	01				        .byte (rec_end - rec_fix) / 3
+.0064					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0064	8d 00 00	sta $0000	        sta @w 0
+.0067					rec_fix
+>0067	01 01 00			        .byte f[0], f[1], f[2]
+.006a					rec_end
+.006a					T_STW_V
+=10					rec_id  = len(tpl_all)
+=[8,22,35,43,50,62,70,84,94,98,106]	        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>006a	06				        .byte rec_fix - rec_code
+>006b	02				        .byte (rec_end - rec_fix) / 3
+.006c					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.006c	8d 00 00	sta $0000	        sta @w 0
+=[(1,1,0),(4,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.006f	8c 01 00	sty $0001	        sty @w 1
+.0072					rec_fix
+>0072	01 01 00			        .byte f[0], f[1], f[2]
+>0075	04 01 00			        .byte f[0], f[1], f[2]
+.0078					rec_end
+.0078					T_PUSH
+=11					rec_id  = len(tpl_all)
+=[8,22,35,43,50,62,70,84,94,98,106,120]	        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0078	06				        .byte rec_fix - rec_code
+>0079	00				        .byte (rec_end - rec_fix) / 3
+.007a					rec_code
+.007a	95 30		sta $30,x	        sta ESTK,x
+.007c	94 31		sty $31,x	        sty ESTK+1,x
+.007e	e8		inx		        inx
+.007f	e8		inx		        inx
+.0080					rec_fix
+.0080					rec_end
+.0080					T_POKE
+=12					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0080	04				        .byte rec_fix - rec_code
+>0081	00				        .byte (rec_end - rec_fix) / 3
+.0082					rec_code
+.0082	ca		dex		        dex
+.0083	ca		dex		        dex
+.0084	81 30		sta ($30,x)	        sta (ESTK,x)
+.0086					rec_fix
+.0086					rec_end
+.0086					T_PEEK
+=13					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0086	06				        .byte rec_fix - rec_code
+>0087	00				        .byte (rec_end - rec_fix) / 3
+.0088					rec_code
+.0088	85 22		sta $22		        sta ZP_PTR
+.008a	84 23		sty $23		        sty ZP_PTR+1
+.008c	b2 22		lda ($22)	        lda (ZP_PTR)
+.008e					rec_fix
+.008e					rec_end
+.008e					T_JSR
+=14					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>008e	03				        .byte rec_fix - rec_code
+>008f	01				        .byte (rec_end - rec_fix) / 3
+.0090					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0090	20 00 00	jsr $0000	        jsr @w 0
+.0093					rec_fix
+>0093	01 01 00			        .byte f[0], f[1], f[2]
+.0096					rec_end
+.0096					T_PUSHB
+=15					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0096	06				        .byte rec_fix - rec_code
+>0097	00				        .byte (rec_end - rec_fix) / 3
+.0098					rec_code
+.0098	95 30		sta $30,x	        sta ESTK,x
+.009a	74 31		stz $31,x	        stz ESTK+1,x
+.009c	e8		inx		        inx
+.009d	e8		inx		        inx
+.009e					rec_fix
+.009e					rec_end
+.009e					T_RTS
+=16					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>009e	01				        .byte rec_fix - rec_code
+>009f	00				        .byte (rec_end - rec_fix) / 3
+.00a0					rec_code
+.00a0	60		rts		        rts
+.00a1					rec_fix
+.00a1					rec_end
+.00a1					T_POPB_V
+=17					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00a1	07				        .byte rec_fix - rec_code
+>00a2	01				        .byte (rec_end - rec_fix) / 3
+.00a3					rec_code
+.00a3	ca		dex		        dex
+.00a4	ca		dex		        dex
+.00a5	b5 30		lda $30,x	        lda ESTK,x
+=[(5,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.00a7	8d 00 00	sta $0000	        sta @w 0
+.00aa					rec_fix
+>00aa	05 01 00			        .byte f[0], f[1], f[2]
+.00ad					rec_end
+.00ad					T_POPW_V
+=18					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00ad	0c				        .byte rec_fix - rec_code
+>00ae	02				        .byte (rec_end - rec_fix) / 3
+.00af					rec_code
+.00af	ca		dex		        dex
+.00b0	ca		dex		        dex
+.00b1	b5 30		lda $30,x	        lda ESTK,x
+=[(5,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.00b3	8d 00 00	sta $0000	        sta @w 0
+.00b6	b5 31		lda $31,x	        lda ESTK+1,x
+=[(5,1,0),(10,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.00b8	8d 01 00	sta $0001	        sta @w 1
+.00bb					rec_fix
+>00bb	05 01 00			        .byte f[0], f[1], f[2]
+>00be	0a 01 00			        .byte f[0], f[1], f[2]
+.00c1					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\T-PRINT.ASM
+
+.00c1					T_PRSTR
+=19					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00c1	03				        .byte rec_fix - rec_code
+>00c2	01				        .byte (rec_end - rec_fix) / 3
+.00c3					rec_code
+=[(1,5,29)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_PRSTR.rec_id)]
+.00c3	20 00 00	jsr $0000	        jsr @w 0
+.00c6					rec_fix
+>00c6	01 05 1d			        .byte f[0], f[1], f[2]
+.00c9					rec_end
+.00c9					T_PRCHR
+=20					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00c9	03				        .byte rec_fix - rec_code
+>00ca	01				        .byte (rec_end - rec_fix) / 3
+.00cb					rec_code
+=[(1,5,35)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.00cb	20 00 00	jsr $0000	        jsr @w 0
+.00ce					rec_fix
+>00ce	01 05 23			        .byte f[0], f[1], f[2]
+.00d1					rec_end
+.00d1					T_PRWORD
+=21					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00d1	03				        .byte rec_fix - rec_code
+>00d2	01				        .byte (rec_end - rec_fix) / 3
+.00d3					rec_code
+=[(1,5,30)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_PRWORD.rec_id)]
+.00d3	20 00 00	jsr $0000	        jsr @w 0
+.00d6					rec_fix
+>00d6	01 05 1e			        .byte f[0], f[1], f[2]
+.00d9					rec_end
+.00d9					T_PRBYTE
+=22					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00d9	05				        .byte rec_fix - rec_code
+>00da	01				        .byte (rec_end - rec_fix) / 3
+.00db					rec_code
+.00db	a0 00		ldy #$00	        ldy #0
+=[(3,5,30)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_PRWORD.rec_id)]
+.00dd	20 00 00	jsr $0000	        jsr @w 0
+.00e0					rec_fix
+>00e0	03 05 1e			        .byte f[0], f[1], f[2]
+.00e3					rec_end
+.00e3					T_PRNL
+=23					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00e3	03				        .byte rec_fix - rec_code
+>00e4	01				        .byte (rec_end - rec_fix) / 3
+.00e5					rec_code
+=[(1,5,31)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_PRNL.rec_id)]
+.00e5	20 00 00	jsr $0000	        jsr @w 0
+.00e8					rec_fix
+>00e8	01 05 1f			        .byte f[0], f[1], f[2]
+.00eb					rec_end
+.00eb					T_PRCOMMA
+=24					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00eb	03				        .byte rec_fix - rec_code
+>00ec	01				        .byte (rec_end - rec_fix) / 3
+.00ed					rec_code
+=[(1,5,32)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_PRCOMMA.rec_id)]
+.00ed	20 00 00	jsr $0000	        jsr @w 0
+.00f0					rec_fix
+>00f0	01 05 20			        .byte f[0], f[1], f[2]
+.00f3					rec_end
+.00f3					T_POSCOL
+=25					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00f3	07				        .byte rec_fix - rec_code
+>00f4	01				        .byte (rec_end - rec_fix) / 3
+.00f5					rec_code
+.00f5	da		phx		        phx
+.00f6	38		sec		        sec
+=[(3,5,36)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_PLOT.rec_id)]
+.00f7	20 00 00	jsr $0000	        jsr @w 0
+.00fa	98		tya		        tya
+.00fb	fa		plx		        plx
+.00fc					rec_fix
+>00fc	03 05 24			        .byte f[0], f[1], f[2]
+.00ff					rec_end
+.00ff					T_POSROW
+=26					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>00ff	07				        .byte rec_fix - rec_code
+>0100	01				        .byte (rec_end - rec_fix) / 3
+.0101					rec_code
+.0101	da		phx		        phx
+.0102	38		sec		        sec
+=[(3,5,36)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_PLOT.rec_id)]
+.0103	20 00 00	jsr $0000	        jsr @w 0
+.0106	8a		txa		        txa
+.0107	fa		plx		        plx
+.0108					rec_fix
+>0108	03 05 24			        .byte f[0], f[1], f[2]
+.010b					rec_end
+.010b					T_POSSETCOL
+=27					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>010b	03				        .byte rec_fix - rec_code
+>010c	01				        .byte (rec_end - rec_fix) / 3
+.010d					rec_code
+=[(1,5,33)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_POSSETCOL.rec_id)]
+.010d	20 00 00	jsr $0000	        jsr @w 0
+.0110					rec_fix
+>0110	01 05 21			        .byte f[0], f[1], f[2]
+.0113					rec_end
+.0113					T_POSSETROW
+=28					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0113	03				        .byte rec_fix - rec_code
+>0114	01				        .byte (rec_end - rec_fix) / 3
+.0115					rec_code
+=[(1,5,34)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_POSSETROW.rec_id)]
+.0115	20 00 00	jsr $0000	        jsr @w 0
+.0118					rec_fix
+>0118	01 05 22			        .byte f[0], f[1], f[2]
+.011b					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\R-PRINT.ASM
+
+.011b					R_PRSTR
+=29					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>011b	1d				        .byte rec_fix - rec_code
+>011c	01				        .byte (rec_end - rec_fix) / 3
+.011d					rec_code
+.011d	85 22		sta $22		        sta ZP_PTR
+.011f	84 23		sty $23		        sty ZP_PTR+1
+.0121	a0 01		ldy #$01	        ldy #1
+.0123	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.0125	f0 12		beq $0139	        beq done
+.0127	85 24		sta $24		        sta ZP_TMP              ; the length
+.0129	e6 22		inc $22		        inc ZP_PTR              ; (ZP_PTR),y with y = 1 is the first character
+.012b	d0 02		bne $012f	        bne loop
+.012d	e6 23		inc $23		        inc ZP_PTR+1
+.012f	b1 22		lda ($22),y	loop    lda (ZP_PTR),y
+=[(21,5,35)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0131	20 00 00	jsr $0000	        jsr @w 0
+.0134	c4 24		cpy $24		        cpy ZP_TMP
+.0136	c8		iny		        iny
+.0137	90 f6		bcc $012f	        bcc loop
+.0139	60		rts		done    rts
+.013a					rec_fix
+>013a	15 05 23			        .byte f[0], f[1], f[2]
+.013d					rec_end
+.013d					R_PRWORD
+=30					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>013d	4f				        .byte rec_fix - rec_code
+>013e	06				        .byte (rec_end - rec_fix) / 3
+.013f					rec_code
+.013f	da		phx		        phx
+.0140	85 24		sta $24		        sta ZP_TMP
+.0142	84 25		sty $25		        sty ZP_TMP+1
+.0144	a9 20		lda #$20	        lda #" "                ; the sign: a WORD is never negative
+=[(8,5,35)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0146	20 00 00	jsr $0000	        jsr @w 0
+.0149	64 22		stz $22		        stz ZP_PTR              ; not 0 once a digit is printed
+.014b	a2 00		ldx #$00	        ldx #0
+.014d	a0 30		ldy #$30	digit   ldy #"0"
+.014f	a5 24		lda $24		sub     lda ZP_TMP              ; count how many times the power of ten goes
+.0151	38		sec		        sec
+=[(8,5,35),(20,4,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0152	fd 47 00	sbc $0047,x	        sbc @w tens_lo - rec_code, x
+.0155	48		pha		        pha
+.0156	a5 25		lda $25		        lda ZP_TMP+1
+=[(8,5,35),(20,4,0),(26,4,0)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0158	fd 4b 00	sbc $004b,x	        sbc @w tens_hi - rec_code, x
+.015b	90 08		bcc $0165	        bcc out
+.015d	85 25		sta $25		        sta ZP_TMP+1
+.015f	68		pla		        pla
+.0160	85 24		sta $24		        sta ZP_TMP
+.0162	c8		iny		        iny
+.0163	80 ea		bra $014f	        bra sub
+.0165	68		pla		out     pla
+.0166	98		tya		        tya
+.0167	c9 30		cmp #$30	        cmp #"0"
+.0169	d0 04		bne $016f	        bne show
+.016b	a4 22		ldy $22		        ldy ZP_PTR
+.016d	f0 05		beq $0174	        beq next                ; a leading zero
+.016f	85 22		sta $22		show    sta ZP_PTR
+=[(8,5,35),(20,4,0),(26,4,0),(51,5,35)]	        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0171	20 00 00	jsr $0000	        jsr @w 0
+.0174	e8		inx		next    inx
+.0175	e0 04		cpx #$04	        cpx #4
+.0177	d0 d4		bne $014d	        bne digit
+.0179	a5 24		lda $24		        lda ZP_TMP              ; the ones, always printed
+.017b	09 30		ora #$30	        ora #"0"
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.017d	20 00 00	jsr $0000	        jsr @w 0
+.0180	a9 20		lda #$20	        lda #" "
+.0182	fa		plx		        plx
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0183	4c 00 00	jmp $0000	        jmp @w 0
+>0186	10 e8 64 0a			tens_lo .byte <10000, <1000, <100, <10
+>018a	27 03 00 00			tens_hi .byte >10000, >1000, >100, >10
+.018e					rec_fix
+>018e	08 05 23			        .byte f[0], f[1], f[2]
+>0191	14 04 00			        .byte f[0], f[1], f[2]
+>0194	1a 04 00			        .byte f[0], f[1], f[2]
+>0197	33 05 23			        .byte f[0], f[1], f[2]
+>019a	3f 05 23			        .byte f[0], f[1], f[2]
+>019d	45 05 23			        .byte f[0], f[1], f[2]
+.01a0					rec_end
+.01a0					R_PRNL
+=31					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>01a0	05				        .byte rec_fix - rec_code
+>01a1	01				        .byte (rec_end - rec_fix) / 3
+.01a2					rec_code
+.01a2	a9 0d		lda #$0d	        lda #13
+=[(3,5,35)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.01a4	4c 00 00	jmp $0000	        jmp @w 0
+.01a7					rec_fix
+>01a7	03 05 23			        .byte f[0], f[1], f[2]
+.01aa					rec_end
+.01aa					R_PRCOMMA
+=32					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>01aa	22				        .byte rec_fix - rec_code
+>01ab	03				        .byte (rec_end - rec_fix) / 3
+.01ac					rec_code
+.01ac	da		phx		        phx
+.01ad	38		sec		        sec
+=[(3,5,36)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_PLOT.rec_id)]
+.01ae	20 00 00	jsr $0000	        jsr @w 0
+.01b1	c0 38		cpy #$38	        cpy #56
+.01b3	b0 13		bcs $01c8	        bcs newline
+.01b5	98		tya		        tya
+.01b6	38		sec		mod     sec                     ; A = the column mod 14, minus 14
+.01b7	e9 0e		sbc #$0e	        sbc #14
+.01b9	b0 fb		bcs $01b6	        bcs mod
+.01bb	49 ff		eor #$ff	        eor #$ff                ; = the spaces to print, minus 1
+.01bd	aa		tax		        tax
+.01be	a9 20		lda #$20	space   lda #" "
+=[(3,5,36),(21,5,35)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.01c0	20 00 00	jsr $0000	        jsr @w 0
+.01c3	ca		dex		        dex
+.01c4	10 f8		bpl $01be	        bpl space
+.01c6	fa		plx		        plx
+.01c7	60		rts		        rts
+.01c8	fa		plx		newline plx
+.01c9	a9 0d		lda #$0d	        lda #13
+=[(3,5,36),(21,5,35),(32,5,35)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.01cb	4c 00 00	jmp $0000	        jmp @w 0
+.01ce					rec_fix
+>01ce	03 05 24			        .byte f[0], f[1], f[2]
+>01d1	15 05 23			        .byte f[0], f[1], f[2]
+>01d4	20 05 23			        .byte f[0], f[1], f[2]
+.01d7					rec_end
+.01d7					R_POSSETCOL
+=33					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>01d7	0d				        .byte rec_fix - rec_code
+>01d8	02				        .byte (rec_end - rec_fix) / 3
+.01d9					rec_code
+.01d9	da		phx		        phx
+.01da	48		pha		        pha
+.01db	38		sec		        sec
+=[(4,5,36)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_PLOT.rec_id)]
+.01dc	20 00 00	jsr $0000	        jsr @w 0
+.01df	7a		ply		        ply
+.01e0	18		clc		        clc
+=[(4,5,36),(9,5,36)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_PLOT.rec_id)]
+.01e1	20 00 00	jsr $0000	        jsr @w 0
+.01e4	fa		plx		        plx
+.01e5	60		rts		        rts
+.01e6					rec_fix
+>01e6	04 05 24			        .byte f[0], f[1], f[2]
+>01e9	09 05 24			        .byte f[0], f[1], f[2]
+.01ec					rec_end
+.01ec					R_POSSETROW
+=34					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>01ec	0d				        .byte rec_fix - rec_code
+>01ed	02				        .byte (rec_end - rec_fix) / 3
+.01ee					rec_code
+.01ee	da		phx		        phx
+.01ef	48		pha		        pha
+.01f0	38		sec		        sec
+=[(4,5,36)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_PLOT.rec_id)]
+.01f1	20 00 00	jsr $0000	        jsr @w 0
+.01f4	fa		plx		        plx
+.01f5	18		clc		        clc
+=[(4,5,36),(9,5,36)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_PLOT.rec_id)]
+.01f6	20 00 00	jsr $0000	        jsr @w 0
+.01f9	fa		plx		        plx
+.01fa	60		rts		        rts
+.01fb					rec_fix
+>01fb	04 05 24			        .byte f[0], f[1], f[2]
+>01fe	09 05 24			        .byte f[0], f[1], f[2]
+.0201					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\SYS.ASM
+
+.0201					S_CHROUT
+=35					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0201	03				        .byte rec_fix - rec_code
+>0202	00				        .byte (rec_end - rec_fix) / 3
+.0203					rec_code
+.0203	4c d2 ff	jmp $ffd2	        jmp $ffd2
+.0206					rec_fix
+.0206					rec_end
+.0206					S_PLOT
+=36					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0206	03				        .byte rec_fix - rec_code
+>0207	00				        .byte (rec_end - rec_fix) / 3
+.0208					rec_code
+.0208	4c f0 ff	jmp $fff0	        jmp $fff0
+.020b					rec_fix
+.020b					rec_end
+.020b					S_GETIN
+=37					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>020b	03				        .byte rec_fix - rec_code
+>020c	00				        .byte (rec_end - rec_fix) / 3
+.020d					rec_code
+.020d	4c e4 ff	jmp $ffe4	        jmp $ffe4
+.0210					rec_fix
+.0210					rec_end
+.0210					S_CHRIN
+=38					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0210	03				        .byte rec_fix - rec_code
+>0211	00				        .byte (rec_end - rec_fix) / 3
+.0212					rec_code
+.0212	4c cf ff	jmp $ffcf	        jmp $ffcf
+.0215					rec_fix
+.0215					rec_end
+.0215					S_READST
+=39					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0215	03				        .byte rec_fix - rec_code
+>0216	00				        .byte (rec_end - rec_fix) / 3
+.0217					rec_code
+.0217	4c b7 ff	jmp $ffb7	        jmp $ffb7
+.021a					rec_fix
+.021a					rec_end
+.021a					S_SETLFS
+=40					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>021a	03				        .byte rec_fix - rec_code
+>021b	00				        .byte (rec_end - rec_fix) / 3
+.021c					rec_code
+.021c	4c ba ff	jmp $ffba	        jmp $ffba
+.021f					rec_fix
+.021f					rec_end
+.021f					S_SETNAM
+=41					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>021f	03				        .byte rec_fix - rec_code
+>0220	00				        .byte (rec_end - rec_fix) / 3
+.0221					rec_code
+.0221	4c bd ff	jmp $ffbd	        jmp $ffbd
+.0224					rec_fix
+.0224					rec_end
+.0224					S_OPEN
+=42					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0224	03				        .byte rec_fix - rec_code
+>0225	00				        .byte (rec_end - rec_fix) / 3
+.0226					rec_code
+.0226	4c c0 ff	jmp $ffc0	        jmp $ffc0
+.0229					rec_fix
+.0229					rec_end
+.0229					S_CLOSE
+=43					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0229	03				        .byte rec_fix - rec_code
+>022a	00				        .byte (rec_end - rec_fix) / 3
+.022b					rec_code
+.022b	4c c3 ff	jmp $ffc3	        jmp $ffc3
+.022e					rec_fix
+.022e					rec_end
+.022e					S_CHKIN
+=44					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>022e	03				        .byte rec_fix - rec_code
+>022f	00				        .byte (rec_end - rec_fix) / 3
+.0230					rec_code
+.0230	4c c6 ff	jmp $ffc6	        jmp $ffc6
+.0233					rec_fix
+.0233					rec_end
+.0233					S_CHKOUT
+=45					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0233	03				        .byte rec_fix - rec_code
+>0234	00				        .byte (rec_end - rec_fix) / 3
+.0235					rec_code
+.0235	4c c9 ff	jmp $ffc9	        jmp $ffc9
+.0238					rec_fix
+.0238					rec_end
+.0238					S_CLRCHN
+=46					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0238	03				        .byte rec_fix - rec_code
+>0239	00				        .byte (rec_end - rec_fix) / 3
+.023a					rec_code
+.023a	4c cc ff	jmp $ffcc	        jmp $ffcc
+.023d					rec_fix
+.023d					rec_end
+.023d					S_LKUPLA
+=47					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>023d	03				        .byte rec_fix - rec_code
+>023e	00				        .byte (rec_end - rec_fix) / 3
+.023f					rec_code
+.023f	4c 59 ff	jmp $ff59	        jmp $ff59
+.0242					rec_fix
+.0242					rec_end
+.0242					S_INIT
+=48					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0242	0f				        .byte rec_fix - rec_code
+>0243	01				        .byte (rec_end - rec_fix) / 3
+.0244					rec_code
+.0244	ad 72 03	lda $0372	        lda $0372
+.0247	85 27		sta $27		        sta ZP_MODE
+.0249	a9 0f		lda #$0f	        lda #$0f                ; ISO mode on: CHROUT writes each byte as its screen code
+=[(8,5,35)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.024b	20 00 00	jsr $0000	        jsr @w 0
+.024e	a9 07		lda #$07	        lda #7                  ; CP437
+.0250	4c 62 ff	jmp $ff62	        jmp $ff62               ; screen_set_charset
+.0253					rec_fix
+>0253	08 05 23			        .byte f[0], f[1], f[2]
+.0256					rec_end
+.0256					S_EXIT
+=49					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0256	7e				        .byte rec_fix - rec_code
+>0257	02				        .byte (rec_end - rec_fix) / 3
+.0258					rec_code
+.0258	24 27		bit $27		        bit ZP_MODE             ; V = bit 6, set in ISO mode
+.025a	70 5a		bvs $02b6	        bvs font                ; an ISO screen reads the same in the kept charset
+.025c	78		sei		        sei                     ; the KERNAL's IRQ moves the VERA address
+.025d	20 ed ff	jsr $ffed	        jsr $ffed               ; SCREEN: X = columns, Y = rows
+.0260	86 24		stx $24		        stx ZP_TMP
+.0262	a5 27		lda $27		        lda ZP_MODE             ; charsets 3 and 5 are upper/lower: upper case is $41-$5A
+.0264	4a		lsr a		        lsr a
+.0265	a9 00		lda #$00	        lda #0
+.0267	90 02		bcc $026b	        bcc ug
+.0269	a9 40		lda #$40	        lda #$40
+.026b	85 25		sta $25		ug      sta ZP_TMP+1
+.026d	88		dey		        dey
+.026e	9c 25 9f	stz $9f25	row     stz $9f25               ; port 0 reads the row
+=[(26,4,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0271	20 6e 00	jsr $006e	        jsr @w port - rec_code
+.0274	a9 01		lda #$01	        lda #1                  ; port 1 writes the same cells
+.0276	8d 25 9f	sta $9f25	        sta $9f25
+=[(26,4,0),(34,4,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0279	20 6e 00	jsr $006e	        jsr @w port - rec_code
+.027c	a6 24		ldx $24		        ldx ZP_TMP
+.027e	ad 23 9f	lda $9f23	cell    lda $9f23
+.0281	c9 20		cmp #$20	        cmp #$20
+.0283	90 22		bcc $02a7	        bcc blank
+.0285	c9 40		cmp #$40	        cmp #$40
+.0287	90 20		bcc $02a9	        bcc put                 ; $20-$3F: the same code
+.0289	c9 7c		cmp #$7c	        cmp #$7c
+.028b	f0 16		beq $02a3	        beq bar
+.028d	c9 7f		cmp #$7f	        cmp #$7f
+.028f	b0 16		bcs $02a7	        bcs blank
+.0291	c9 41		cmp #$41	        cmp #$41
+.0293	90 0a		bcc $029f	        bcc low5
+.0295	c9 5b		cmp #$5b	        cmp #$5b
+.0297	b0 06		bcs $029f	        bcs low5
+.0299	29 1f		and #$1f	        and #$1f                ; A-Z
+.029b	05 25		ora $25		        ora ZP_TMP+1
+.029d	80 0a		bra $02a9	        bra put
+.029f	29 1f		and #$1f	low5    and #$1f                ; @ [ \ ] ^ _ ` a-z { } ~ to $00-$1F
+.02a1	80 06		bra $02a9	        bra put
+.02a3	a9 5d		lda #$5d	bar     lda #$5d                ; | to the vertical line
+.02a5	80 02		bra $02a9	        bra put
+.02a7	a9 20		lda #$20	blank   lda #$20                ; no PETSCII glyph
+.02a9	8d 24 9f	sta $9f24	put     sta $9f24
+.02ac	ca		dex		        dex
+.02ad	d0 cf		bne $027e	        bne cell
+.02af	88		dey		        dey
+.02b0	10 bc		bpl $026e	        bpl row
+.02b2	9c 25 9f	stz $9f25	        stz $9f25
+.02b5	58		cli		        cli
+.02b6	a5 27		lda $27		font    lda ZP_MODE
+.02b8	29 3f		and #$3f	        and #63
+.02ba	20 62 ff	jsr $ff62	        jsr $ff62
+.02bd	a5 27		lda $27		        lda ZP_MODE             ; screen_set_charset leaves bit 6 as it was
+.02bf	8d 72 03	sta $0372	        sta $0372
+.02c2	a6 26		ldx $26		        ldx ZP_SP
+.02c4	9a		txs		        txs
+.02c5	60		rts		        rts
+.02c6	9c 20 9f	stz $9f20	port    stz $9f20               ; VRAM $1B000 + Y * 256, step 2: the character bytes only
+.02c9	98		tya		        tya
+.02ca	18		clc		        clc
+.02cb	69 b0		adc #$b0	        adc #$b0
+.02cd	8d 21 9f	sta $9f21	        sta $9f21
+.02d0	a9 21		lda #$21	        lda #$21
+.02d2	8d 22 9f	sta $9f22	        sta $9f22
+.02d5	60		rts		        rts
+.02d6					rec_fix
+>02d6	1a 04 00			        .byte f[0], f[1], f[2]
+>02d9	22 04 00			        .byte f[0], f[1], f[2]
+.02dc					rec_end
+.02dc					R_SYS
+=50					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>02dc	2b				        .byte rec_fix - rec_code
+>02dd	01				        .byte (rec_end - rec_fix) / 3
+.02de					rec_code
+.02de	85 22		sta $22		        sta ZP_PTR
+.02e0	84 23		sty $23		        sty ZP_PTR+1
+.02e2	da		phx		        phx
+.02e3	ad 0f 03	lda $030f	        lda $030f
+.02e6	29 f3		and #$f3	        and #$f3
+.02e8	48		pha		        pha
+.02e9	ad 0c 03	lda $030c	        lda $030c
+.02ec	ae 0d 03	ldx $030d	        ldx $030d
+.02ef	ac 0e 03	ldy $030e	        ldy $030e
+.02f2	28		plp		        plp
+=[(22,4,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.02f3	20 28 00	jsr $0028	        jsr @w call - rec_code
+.02f6	08		php		        php
+.02f7	8d 0c 03	sta $030c	        sta $030c
+.02fa	8e 0d 03	stx $030d	        stx $030d
+.02fd	8c 0e 03	sty $030e	        sty $030e
+.0300	68		pla		        pla
+.0301	8d 0f 03	sta $030f	        sta $030f
+.0304	fa		plx		        plx
+.0305	60		rts		        rts
+.0306	6c 22 00	jmp ($0022)	call    jmp (ZP_PTR)
+.0309					rec_fix
+>0309	16 04 00			        .byte f[0], f[1], f[2]
+.030c					rec_end
+.030c					T_SYS
+=51					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>030c	03				        .byte rec_fix - rec_code
+>030d	01				        .byte (rec_end - rec_fix) / 3
+.030e					rec_code
+=[(1,5,50)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_SYS.rec_id)]
+.030e	20 00 00	jsr $0000	        jsr @w 0
+.0311					rec_fix
+>0311	01 05 32			        .byte f[0], f[1], f[2]
+.0314					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\T-EXPR.ASM
+
+.0314					T_ADDB
+=52					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0314	05				        .byte rec_fix - rec_code
+>0315	00				        .byte (rec_end - rec_fix) / 3
+.0316					rec_code
+.0316	ca		dex		        dex
+.0317	ca		dex		        dex
+.0318	18		clc		        clc
+.0319	75 30		adc $30,x	        adc ESTK,x
+.031b					rec_fix
+.031b					rec_end
+.031b					T_ADDW
+=53					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>031b	0b				        .byte rec_fix - rec_code
+>031c	00				        .byte (rec_end - rec_fix) / 3
+.031d					rec_code
+.031d	ca		dex		        dex
+.031e	ca		dex		        dex
+.031f	18		clc		        clc
+.0320	75 30		adc $30,x	        adc ESTK,x
+.0322	48		pha		        pha
+.0323	98		tya		        tya
+.0324	75 31		adc $31,x	        adc ESTK+1,x
+.0326	a8		tay		        tay
+.0327	68		pla		        pla
+.0328					rec_fix
+.0328					rec_end
+.0328					T_SUBB
+=54					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0328	07				        .byte rec_fix - rec_code
+>0329	00				        .byte (rec_end - rec_fix) / 3
+.032a					rec_code
+.032a	ca		dex		        dex
+.032b	ca		dex		        dex
+.032c	49 ff		eor #$ff	        eor #$ff
+.032e	38		sec		        sec
+.032f	75 30		adc $30,x	        adc ESTK,x
+.0331					rec_fix
+.0331					rec_end
+.0331					T_SUBW
+=55					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0331	0f				        .byte rec_fix - rec_code
+>0332	00				        .byte (rec_end - rec_fix) / 3
+.0333					rec_code
+.0333	ca		dex		        dex
+.0334	ca		dex		        dex
+.0335	49 ff		eor #$ff	        eor #$ff
+.0337	38		sec		        sec
+.0338	75 30		adc $30,x	        adc ESTK,x
+.033a	48		pha		        pha
+.033b	98		tya		        tya
+.033c	49 ff		eor #$ff	        eor #$ff
+.033e	75 31		adc $31,x	        adc ESTK+1,x
+.0340	a8		tay		        tay
+.0341	68		pla		        pla
+.0342					rec_fix
+.0342					rec_end
+.0342					T_ANDB
+=56					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0342	04				        .byte rec_fix - rec_code
+>0343	00				        .byte (rec_end - rec_fix) / 3
+.0344					rec_code
+.0344	ca		dex		        dex
+.0345	ca		dex		        dex
+.0346	35 30		and $30,x	        and ESTK,x
+.0348					rec_fix
+.0348					rec_end
+.0348					T_ANDW
+=57					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0348	0a				        .byte rec_fix - rec_code
+>0349	00				        .byte (rec_end - rec_fix) / 3
+.034a					rec_code
+.034a	ca		dex		        dex
+.034b	ca		dex		        dex
+.034c	35 30		and $30,x	        and ESTK,x
+.034e	48		pha		        pha
+.034f	98		tya		        tya
+.0350	35 31		and $31,x	        and ESTK+1,x
+.0352	a8		tay		        tay
+.0353	68		pla		        pla
+.0354					rec_fix
+.0354					rec_end
+.0354					T_ORB
+=58					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0354	04				        .byte rec_fix - rec_code
+>0355	00				        .byte (rec_end - rec_fix) / 3
+.0356					rec_code
+.0356	ca		dex		        dex
+.0357	ca		dex		        dex
+.0358	15 30		ora $30,x	        ora ESTK,x
+.035a					rec_fix
+.035a					rec_end
+.035a					T_ORW
+=59					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>035a	0a				        .byte rec_fix - rec_code
+>035b	00				        .byte (rec_end - rec_fix) / 3
+.035c					rec_code
+.035c	ca		dex		        dex
+.035d	ca		dex		        dex
+.035e	15 30		ora $30,x	        ora ESTK,x
+.0360	48		pha		        pha
+.0361	98		tya		        tya
+.0362	15 31		ora $31,x	        ora ESTK+1,x
+.0364	a8		tay		        tay
+.0365	68		pla		        pla
+.0366					rec_fix
+.0366					rec_end
+.0366					T_XORB
+=60					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0366	04				        .byte rec_fix - rec_code
+>0367	00				        .byte (rec_end - rec_fix) / 3
+.0368					rec_code
+.0368	ca		dex		        dex
+.0369	ca		dex		        dex
+.036a	55 30		eor $30,x	        eor ESTK,x
+.036c					rec_fix
+.036c					rec_end
+.036c					T_XORW
+=61					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>036c	0a				        .byte rec_fix - rec_code
+>036d	00				        .byte (rec_end - rec_fix) / 3
+.036e					rec_code
+.036e	ca		dex		        dex
+.036f	ca		dex		        dex
+.0370	55 30		eor $30,x	        eor ESTK,x
+.0372	48		pha		        pha
+.0373	98		tya		        tya
+.0374	55 31		eor $31,x	        eor ESTK+1,x
+.0376	a8		tay		        tay
+.0377	68		pla		        pla
+.0378					rec_fix
+.0378					rec_end
+.0378					T_SHLB
+=62					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0378	0c				        .byte rec_fix - rec_code
+>0379	00				        .byte (rec_end - rec_fix) / 3
+.037a					rec_code
+.037a	ca		dex		        dex
+.037b	ca		dex		        dex
+.037c	a8		tay		        tay
+.037d	f0 05		beq $0384	        beq done
+.037f	16 30		asl $30,x	loop    asl ESTK,x
+.0381	88		dey		        dey
+.0382	d0 fb		bne $037f	        bne loop
+.0384	b5 30		lda $30,x	done    lda ESTK,x
+.0386					rec_fix
+.0386					rec_end
+.0386					T_SHLW
+=63					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0386	10				        .byte rec_fix - rec_code
+>0387	00				        .byte (rec_end - rec_fix) / 3
+.0388					rec_code
+.0388	ca		dex		        dex
+.0389	ca		dex		        dex
+.038a	a8		tay		        tay
+.038b	f0 07		beq $0394	        beq done
+.038d	16 30		asl $30,x	loop    asl ESTK,x
+.038f	36 31		rol $31,x	        rol ESTK+1,x
+.0391	88		dey		        dey
+.0392	d0 f9		bne $038d	        bne loop
+.0394	b5 30		lda $30,x	done    lda ESTK,x
+.0396	b4 31		ldy $31,x	        ldy ESTK+1,x
+.0398					rec_fix
+.0398					rec_end
+.0398					T_SHRB
+=64					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0398	0c				        .byte rec_fix - rec_code
+>0399	00				        .byte (rec_end - rec_fix) / 3
+.039a					rec_code
+.039a	ca		dex		        dex
+.039b	ca		dex		        dex
+.039c	a8		tay		        tay
+.039d	f0 05		beq $03a4	        beq done
+.039f	56 30		lsr $30,x	loop    lsr ESTK,x
+.03a1	88		dey		        dey
+.03a2	d0 fb		bne $039f	        bne loop
+.03a4	b5 30		lda $30,x	done    lda ESTK,x
+.03a6					rec_fix
+.03a6					rec_end
+.03a6					T_SHRW
+=65					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03a6	10				        .byte rec_fix - rec_code
+>03a7	00				        .byte (rec_end - rec_fix) / 3
+.03a8					rec_code
+.03a8	ca		dex		        dex
+.03a9	ca		dex		        dex
+.03aa	a8		tay		        tay
+.03ab	f0 07		beq $03b4	        beq done
+.03ad	56 31		lsr $31,x	loop    lsr ESTK+1,x
+.03af	76 30		ror $30,x	        ror ESTK,x
+.03b1	88		dey		        dey
+.03b2	d0 f9		bne $03ad	        bne loop
+.03b4	b5 30		lda $30,x	done    lda ESTK,x
+.03b6	b4 31		ldy $31,x	        ldy ESTK+1,x
+.03b8					rec_fix
+.03b8					rec_end
+.03b8					T_MUL
+=66					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03b8	03				        .byte rec_fix - rec_code
+>03b9	01				        .byte (rec_end - rec_fix) / 3
+.03ba					rec_code
+=[(1,5,82)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_MULW.rec_id)]
+.03ba	20 00 00	jsr $0000	        jsr @w 0
+.03bd					rec_fix
+>03bd	01 05 52			        .byte f[0], f[1], f[2]
+.03c0					rec_end
+.03c0					T_DIV
+=67					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03c0	03				        .byte rec_fix - rec_code
+>03c1	01				        .byte (rec_end - rec_fix) / 3
+.03c2					rec_code
+=[(1,5,83)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_DIVW.rec_id)]
+.03c2	20 00 00	jsr $0000	        jsr @w 0
+.03c5					rec_fix
+>03c5	01 05 53			        .byte f[0], f[1], f[2]
+.03c8					rec_end
+.03c8					T_MOD
+=68					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03c8	07				        .byte rec_fix - rec_code
+>03c9	01				        .byte (rec_end - rec_fix) / 3
+.03ca					rec_code
+=[(1,5,83)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_DIVW.rec_id)]
+.03ca	20 00 00	jsr $0000	        jsr @w 0
+.03cd	a5 22		lda $22		        lda ZP_PTR
+.03cf	a4 23		ldy $23		        ldy ZP_PTR+1
+.03d1					rec_fix
+>03d1	01 05 53			        .byte f[0], f[1], f[2]
+.03d4					rec_end
+.03d4					T_NEGB
+=69					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03d4	03				        .byte rec_fix - rec_code
+>03d5	00				        .byte (rec_end - rec_fix) / 3
+.03d6					rec_code
+.03d6	49 ff		eor #$ff	        eor #$ff
+.03d8	1a		inc a		        inc a
+.03d9					rec_fix
+.03d9					rec_end
+.03d9					T_NEGW
+=70					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03d9	0d				        .byte rec_fix - rec_code
+>03da	00				        .byte (rec_end - rec_fix) / 3
+.03db					rec_code
+.03db	49 ff		eor #$ff	        eor #$ff
+.03dd	18		clc		        clc
+.03de	69 01		adc #$01	        adc #1
+.03e0	48		pha		        pha
+.03e1	98		tya		        tya
+.03e2	49 ff		eor #$ff	        eor #$ff
+.03e4	69 00		adc #$00	        adc #0
+.03e6	a8		tay		        tay
+.03e7	68		pla		        pla
+.03e8					rec_fix
+.03e8					rec_end
+.03e8					T_NOTB
+=71					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03e8	07				        .byte rec_fix - rec_code
+>03e9	00				        .byte (rec_end - rec_fix) / 3
+.03ea					rec_code
+.03ea	c9 01		cmp #$01	        cmp #1                  ; C = A is not 0
+.03ec	a9 00		lda #$00	        lda #0
+.03ee	2a		rol a		        rol a
+.03ef	49 01		eor #$01	        eor #1
+.03f1					rec_fix
+.03f1					rec_end
+.03f1					T_NOTW
+=72					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03f1	0b				        .byte rec_fix - rec_code
+>03f2	00				        .byte (rec_end - rec_fix) / 3
+.03f3					rec_code
+.03f3	84 24		sty $24		        sty ZP_TMP
+.03f5	05 24		ora $24		        ora ZP_TMP
+.03f7	c9 01		cmp #$01	        cmp #1
+.03f9	a9 00		lda #$00	        lda #0
+.03fb	2a		rol a		        rol a
+.03fc	49 01		eor #$01	        eor #1
+.03fe					rec_fix
+.03fe					rec_end
+.03fe					T_CMPB_LR
+=73					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>03fe	07				        .byte rec_fix - rec_code
+>03ff	00				        .byte (rec_end - rec_fix) / 3
+.0400					rec_code
+.0400	ca		dex		        dex
+.0401	ca		dex		        dex
+.0402	49 ff		eor #$ff	        eor #$ff
+.0404	38		sec		        sec
+.0405	75 30		adc $30,x	        adc ESTK,x
+.0407					rec_fix
+.0407					rec_end
+.0407					T_CMPB_RL
+=74					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0407	04				        .byte rec_fix - rec_code
+>0408	00				        .byte (rec_end - rec_fix) / 3
+.0409					rec_code
+.0409	ca		dex		        dex
+.040a	ca		dex		        dex
+.040b	d5 30		cmp $30,x	        cmp ESTK,x
+.040d					rec_fix
+.040d					rec_end
+.040d					T_CMPW_LR
+=75					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>040d	0c				        .byte rec_fix - rec_code
+>040e	00				        .byte (rec_end - rec_fix) / 3
+.040f					rec_code
+.040f	ca		dex		        dex
+.0410	ca		dex		        dex
+.0411	49 ff		eor #$ff	        eor #$ff
+.0413	38		sec		        sec
+.0414	75 30		adc $30,x	        adc ESTK,x
+.0416	98		tya		        tya
+.0417	49 ff		eor #$ff	        eor #$ff
+.0419	75 31		adc $31,x	        adc ESTK+1,x
+.041b					rec_fix
+.041b					rec_end
+.041b					T_CMPW_RL
+=76					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>041b	07				        .byte rec_fix - rec_code
+>041c	00				        .byte (rec_end - rec_fix) / 3
+.041d					rec_code
+.041d	ca		dex		        dex
+.041e	ca		dex		        dex
+.041f	d5 30		cmp $30,x	        cmp ESTK,x
+.0421	98		tya		        tya
+.0422	f5 31		sbc $31,x	        sbc ESTK+1,x
+.0424					rec_fix
+.0424					rec_end
+.0424					T_CMPW_EQ
+=77					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0424	09				        .byte rec_fix - rec_code
+>0425	00				        .byte (rec_end - rec_fix) / 3
+.0426					rec_code
+.0426	ca		dex		        dex
+.0427	ca		dex		        dex
+.0428	d5 30		cmp $30,x	        cmp ESTK,x
+.042a	d0 03		bne $042f	        bne done
+.042c	98		tya		        tya
+.042d	d5 31		cmp $31,x	        cmp ESTK+1,x
+.042f					done
+.042f					rec_fix
+.042f					rec_end
+.042f					T_CTRUE
+=78					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>042f	03				        .byte rec_fix - rec_code
+>0430	00				        .byte (rec_end - rec_fix) / 3
+.0431					rec_code
+.0431	a9 00		lda #$00	        lda #0
+.0433	2a		rol a		        rol a
+.0434					rec_fix
+.0434					rec_end
+.0434					T_CFALSE
+=79					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0434	05				        .byte rec_fix - rec_code
+>0435	00				        .byte (rec_end - rec_fix) / 3
+.0436					rec_code
+.0436	a9 00		lda #$00	        lda #0
+.0438	2a		rol a		        rol a
+.0439	49 01		eor #$01	        eor #1
+.043b					rec_fix
+.043b					rec_end
+.043b					T_ZTRUE
+=80					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>043b	05				        .byte rec_fix - rec_code
+>043c	00				        .byte (rec_end - rec_fix) / 3
+.043d					rec_code
+.043d	08		php		        php
+.043e	68		pla		        pla
+.043f	4a		lsr a		        lsr a
+.0440	29 01		and #$01	        and #1
+.0442					rec_fix
+.0442					rec_end
+.0442					T_ZFALSE
+=81					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0442	07				        .byte rec_fix - rec_code
+>0443	00				        .byte (rec_end - rec_fix) / 3
+.0444					rec_code
+.0444	08		php		        php
+.0445	68		pla		        pla
+.0446	4a		lsr a		        lsr a
+.0447	29 01		and #$01	        and #1
+.0449	49 01		eor #$01	        eor #1
+.044b					rec_fix
+.044b					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\R-MATH.ASM
+
+.044b					R_MULW
+=82					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>044b	2e				        .byte rec_fix - rec_code
+>044c	00				        .byte (rec_end - rec_fix) / 3
+.044d					rec_code
+.044d	ca		dex		        dex
+.044e	ca		dex		        dex
+.044f	85 24		sta $24		        sta ZP_TMP              ; the right side, shifted out a bit at a time
+.0451	84 25		sty $25		        sty ZP_TMP+1
+.0453	64 22		stz $22		        stz ZP_PTR              ; the product
+.0455	64 23		stz $23		        stz ZP_PTR+1
+.0457	a5 24		lda $24		loop    lda ZP_TMP
+.0459	05 25		ora $25		        ora ZP_TMP+1
+.045b	f0 19		beq $0476	        beq done                ; no bits left
+.045d	46 25		lsr $25		        lsr ZP_TMP+1
+.045f	66 24		ror $24		        ror ZP_TMP
+.0461	90 0d		bcc $0470	        bcc next
+.0463	18		clc		        clc
+.0464	a5 22		lda $22		        lda ZP_PTR
+.0466	75 30		adc $30,x	        adc ESTK,x
+.0468	85 22		sta $22		        sta ZP_PTR
+.046a	a5 23		lda $23		        lda ZP_PTR+1
+.046c	75 31		adc $31,x	        adc ESTK+1,x
+.046e	85 23		sta $23		        sta ZP_PTR+1
+.0470	16 30		asl $30,x	next    asl ESTK,x              ; the left side, doubled for each bit
+.0472	36 31		rol $31,x	        rol ESTK+1,x
+.0474	80 e1		bra $0457	        bra loop
+.0476	a5 22		lda $22		done    lda ZP_PTR
+.0478	a4 23		ldy $23		        ldy ZP_PTR+1
+.047a	60		rts		        rts
+.047b					rec_fix
+.047b					rec_end
+.047b					R_DIVW
+=83					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>047b	3d				        .byte rec_fix - rec_code
+>047c	01				        .byte (rec_end - rec_fix) / 3
+.047d					rec_code
+.047d	ca		dex		        dex
+.047e	ca		dex		        dex
+.047f	85 24		sta $24		        sta ZP_TMP              ; the divisor
+.0481	84 25		sty $25		        sty ZP_TMP+1
+.0483	05 25		ora $25		        ora ZP_TMP+1
+.0485	d0 03		bne $048a	        bne ok
+=[(11,5,85)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_EDIVZ.rec_id)]
+.0487	4c 00 00	jmp $0000	        jmp @w 0
+.048a	64 22		stz $22		ok      stz ZP_PTR              ; the remainder
+.048c	64 23		stz $23		        stz ZP_PTR+1
+.048e	a0 10		ldy #$10	        ldy #16
+.0490	16 30		asl $30,x	loop    asl ESTK,x              ; the dividend turns into the quotient, a bit at a time
+.0492	36 31		rol $31,x	        rol ESTK+1,x
+.0494	26 22		rol $22		        rol ZP_PTR
+.0496	26 23		rol $23		        rol ZP_PTR+1
+.0498	b0 0a		bcs $04a4	        bcs sub                 ; a 17th bit: the divisor surely goes in
+.049a	a5 22		lda $22		        lda ZP_PTR
+.049c	c5 24		cmp $24		        cmp ZP_TMP
+.049e	a5 23		lda $23		        lda ZP_PTR+1
+.04a0	e5 25		sbc $25		        sbc ZP_TMP+1
+.04a2	90 0e		bcc $04b2	        bcc next
+.04a4	a5 22		lda $22		sub     lda ZP_PTR              ; C is set on both ways in
+.04a6	e5 24		sbc $24		        sbc ZP_TMP
+.04a8	85 22		sta $22		        sta ZP_PTR
+.04aa	a5 23		lda $23		        lda ZP_PTR+1
+.04ac	e5 25		sbc $25		        sbc ZP_TMP+1
+.04ae	85 23		sta $23		        sta ZP_PTR+1
+.04b0	f6 30		inc $30,x	        inc ESTK,x              ; this quotient bit is 1
+.04b2	88		dey		next    dey
+.04b3	d0 db		bne $0490	        bne loop
+.04b5	b5 30		lda $30,x	        lda ESTK,x
+.04b7	b4 31		ldy $31,x	        ldy ESTK+1,x
+.04b9	60		rts		        rts
+.04ba					rec_fix
+>04ba	0b 05 55			        .byte f[0], f[1], f[2]
+.04bd					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\R-ERROR.ASM
+
+.04bd					R_ERROR
+=84					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>04bd	6e				        .byte rec_fix - rec_code
+>04be	0b				        .byte (rec_end - rec_fix) / 3
+.04bf					rec_code
+.04bf	68		pla		        pla                     ; the message address, less 1
+.04c0	85 22		sta $22		        sta ZP_PTR
+.04c2	68		pla		        pla
+.04c3	85 23		sta $23		        sta ZP_PTR+1
+.04c5	68		pla		        pla                     ; the error site: the last byte of its JSR
+.04c6	85 24		sta $24		        sta ZP_TMP
+.04c8	68		pla		        pla
+.04c9	85 25		sta $25		        sta ZP_TMP+1
+.04cb	a2 00		ldx #$00	        ldx #0                  ; CR, "?"
+=[(15,4,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.04cd	20 3d 00	jsr $003d	        jsr @w put - rec_code
+.04d0	a0 01		ldy #$01	        ldy #1
+.04d2	b1 22		lda ($22),y	        lda (ZP_PTR),y          ; the message length
+.04d4	aa		tax		        tax
+.04d5	c8		iny		msg     iny
+.04d6	b1 22		lda ($22),y	        lda (ZP_PTR),y
+=[(15,4,0),(26,5,35)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.04d8	20 00 00	jsr $0000	        jsr @w 0
+.04db	ca		dex		        dex
+.04dc	d0 f7		bne $04d5	        bne msg
+.04de	a2 03		ldx #$03	        ldx #tail - head        ; " ERROR AT $"
+=[(15,4,0),(26,5,35),(34,4,0)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.04e0	20 3d 00	jsr $003d	        jsr @w put - rec_code
+.04e3	38		sec		        sec                     ; the JSR's own address is the site - 2
+.04e4	a5 24		lda $24		        lda ZP_TMP
+.04e6	e9 02		sbc #$02	        sbc #2
+.04e8	aa		tax		        tax
+.04e9	a5 25		lda $25		        lda ZP_TMP+1
+.04eb	e9 00		sbc #$00	        sbc #0
+=[(15,4,0),(26,5,35),(34,4,0),(47,4,0)]	        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.04ed	20 49 00	jsr $0049	        jsr @w hex - rec_code
+.04f0	8a		txa		        txa
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.04f1	20 49 00	jsr $0049	        jsr @w hex - rec_code
+.04f4	a9 0d		lda #$0d	        lda #13
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.04f6	20 00 00	jsr $0000	        jsr @w 0
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_EXIT.rec_id)]
+.04f9	4c 00 00	jmp $0000	        jmp @w 0
+.04fc					put
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.04fc	bd 5f 00	lda $005f,x	        lda @w head - rec_code, x
+.04ff	f0 06		beq $0507	        beq done
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0501	20 00 00	jsr $0000	        jsr @w 0
+.0504	e8		inx		        inx
+.0505	80 f5		bra $04fc	        bra put
+.0507	60		rts		done    rts
+.0508	48		pha		hex     pha                     ; print A as two hex digits
+.0509	4a		lsr a		        lsr a
+.050a	4a		lsr a		        lsr a
+.050b	4a		lsr a		        lsr a
+.050c	4a		lsr a		        lsr a
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.050d	20 54 00	jsr $0054	        jsr @w nib - rec_code
+.0510	68		pla		        pla
+.0511	29 0f		and #$0f	        and #$0f
+.0513	c9 0a		cmp #$0a	nib     cmp #10
+.0515	90 02		bcc $0519	        bcc dig
+.0517	69 06		adc #$06	        adc #6                  ; C is set, so this adds 7: past "9" to "A"
+.0519	69 30		adc #$30	dig     adc #"0"
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.051b	4c 00 00	jmp $0000	        jmp @w 0
+>051e	0d				head    .byte 13
+>051f	3f				        .text "?"
+>0520	00				        .byte 0
+>0521	20 45 52 52 4f 52 20 41		tail    .text " ERROR AT $"
+>0529	54 20 24
+>052c	00				        .byte 0
+.052d					rec_fix
+>052d	0f 04 00			        .byte f[0], f[1], f[2]
+>0530	1a 05 23			        .byte f[0], f[1], f[2]
+>0533	22 04 00			        .byte f[0], f[1], f[2]
+>0536	2f 04 00			        .byte f[0], f[1], f[2]
+>0539	33 04 00			        .byte f[0], f[1], f[2]
+>053c	38 05 23			        .byte f[0], f[1], f[2]
+>053f	3b 05 31			        .byte f[0], f[1], f[2]
+>0542	3e 04 00			        .byte f[0], f[1], f[2]
+>0545	43 05 23			        .byte f[0], f[1], f[2]
+>0548	4f 04 00			        .byte f[0], f[1], f[2]
+>054b	5d 05 23			        .byte f[0], f[1], f[2]
+.054e					rec_end
+.054e					R_EDIVZ
+=85					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>054e	14				        .byte rec_fix - rec_code
+>054f	01				        .byte (rec_end - rec_fix) / 3
+.0550					rec_code
+=[(1,5,84)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_ERROR.rec_id)]
+.0550	20 00 00	jsr $0000	        jsr @w 0
+>0553	10				        .byte 16
+>0554	44 49 56 49 53 49 4f 4e		        .text "DIVISION BY ZERO"
+>055c	20 42 59 20 5a 45 52 4f
+.0564					rec_fix
+>0564	01 05 54			        .byte f[0], f[1], f[2]
+.0567					rec_end
+.0567					R_ESUB
+=86					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0567	11				        .byte rec_fix - rec_code
+>0568	01				        .byte (rec_end - rec_fix) / 3
+.0569					rec_code
+=[(1,5,84)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_ERROR.rec_id)]
+.0569	20 00 00	jsr $0000	        jsr @w 0
+>056c	0d				        .byte 13
+>056d	42 41 44 20 53 55 42 53		        .text "BAD SUBSCRIPT"
+>0575	43 52 49 50 54
+.057a					rec_fix
+>057a	01 05 54			        .byte f[0], f[1], f[2]
+.057d					rec_end
+.057d					R_EFILE
+=87					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>057d	11				        .byte rec_fix - rec_code
+>057e	01				        .byte (rec_end - rec_fix) / 3
+.057f					rec_code
+=[(1,5,84)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_ERROR.rec_id)]
+.057f	20 00 00	jsr $0000	        jsr @w 0
+>0582	0d				        .byte 13
+>0583	46 49 4c 45 20 4e 4f 54		        .text "FILE NOT OPEN"
+>058b	20 4f 50 45 4e
+.0590					rec_fix
+>0590	01 05 54			        .byte f[0], f[1], f[2]
+.0593					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\T-FLOW.ASM
+
+.0593					T_JMP
+=88					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0593	03				        .byte rec_fix - rec_code
+>0594	01				        .byte (rec_end - rec_fix) / 3
+.0595					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0595	4c 00 00	jmp $0000	        jmp @w 0
+.0598					rec_fix
+>0598	01 01 00			        .byte f[0], f[1], f[2]
+.059b					rec_end
+.059b					T_BRA
+=89					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>059b	02				        .byte rec_fix - rec_code
+>059c	01				        .byte (rec_end - rec_fix) / 3
+.059d					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.059d	80 00		bra $059f	        bra * + 2
+.059f					rec_fix
+>059f	01 02 00			        .byte f[0], f[1], f[2]
+.05a2					rec_end
+.05a2					T_BEQ
+=90					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05a2	02				        .byte rec_fix - rec_code
+>05a3	01				        .byte (rec_end - rec_fix) / 3
+.05a4					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.05a4	f0 00		beq $05a6	        beq * + 2
+.05a6					rec_fix
+>05a6	01 02 00			        .byte f[0], f[1], f[2]
+.05a9					rec_end
+.05a9					T_BNE
+=91					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05a9	02				        .byte rec_fix - rec_code
+>05aa	01				        .byte (rec_end - rec_fix) / 3
+.05ab					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.05ab	d0 00		bne $05ad	        bne * + 2
+.05ad					rec_fix
+>05ad	01 02 00			        .byte f[0], f[1], f[2]
+.05b0					rec_end
+.05b0					T_BCC
+=92					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05b0	02				        .byte rec_fix - rec_code
+>05b1	01				        .byte (rec_end - rec_fix) / 3
+.05b2					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.05b2	90 00		bcc $05b4	        bcc * + 2
+.05b4					rec_fix
+>05b4	01 02 00			        .byte f[0], f[1], f[2]
+.05b7					rec_end
+.05b7					T_BCS
+=93					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05b7	02				        .byte rec_fix - rec_code
+>05b8	01				        .byte (rec_end - rec_fix) / 3
+.05b9					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.05b9	b0 00		bcs $05bb	        bcs * + 2
+.05bb					rec_fix
+>05bb	01 02 00			        .byte f[0], f[1], f[2]
+.05be					rec_end
+.05be					T_TSTB
+=94					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05be	02				        .byte rec_fix - rec_code
+>05bf	00				        .byte (rec_end - rec_fix) / 3
+.05c0					rec_code
+.05c0	c9 00		cmp #$00	        cmp #0
+.05c2					rec_fix
+.05c2					rec_end
+.05c2					T_TSTW
+=95					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05c2	04				        .byte rec_fix - rec_code
+>05c3	00				        .byte (rec_end - rec_fix) / 3
+.05c4					rec_code
+.05c4	84 24		sty $24		        sty ZP_TMP
+.05c6	05 24		ora $24		        ora ZP_TMP
+.05c8					rec_fix
+.05c8					rec_end
+.05c8					T_TSTW_V
+=96					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05c8	06				        .byte rec_fix - rec_code
+>05c9	02				        .byte (rec_end - rec_fix) / 3
+.05ca					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.05ca	ad 00 00	lda $0000	        lda @w 0
+=[(1,1,0),(4,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.05cd	0d 01 00	ora $0001	        ora @w 1
+.05d0					rec_fix
+>05d0	01 01 00			        .byte f[0], f[1], f[2]
+>05d3	04 01 00			        .byte f[0], f[1], f[2]
+.05d6					rec_end
+.05d6					T_CMPB_C
+=97					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05d6	02				        .byte rec_fix - rec_code
+>05d7	01				        .byte (rec_end - rec_fix) / 3
+.05d8					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.05d8	c9 00		cmp #$00	        cmp #0
+.05da					rec_fix
+>05da	01 02 00			        .byte f[0], f[1], f[2]
+.05dd					rec_end
+.05dd					T_CMPB_V
+=98					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05dd	03				        .byte rec_fix - rec_code
+>05de	01				        .byte (rec_end - rec_fix) / 3
+.05df					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.05df	cd 00 00	cmp $0000	        cmp @w 0
+.05e2					rec_fix
+>05e2	01 01 00			        .byte f[0], f[1], f[2]
+.05e5					rec_end
+.05e5					T_CMPW_C
+=99					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05e5	05				        .byte rec_fix - rec_code
+>05e6	02				        .byte (rec_end - rec_fix) / 3
+.05e7					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.05e7	c9 00		cmp #$00	        cmp #0
+.05e9	98		tya		        tya
+=[(1,2,0),(4,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.05ea	e9 00		sbc #$00	        sbc #0
+.05ec					rec_fix
+>05ec	01 02 00			        .byte f[0], f[1], f[2]
+>05ef	04 03 00			        .byte f[0], f[1], f[2]
+.05f2					rec_end
+.05f2					T_CMPW_V
+=100					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>05f2	07				        .byte rec_fix - rec_code
+>05f3	02				        .byte (rec_end - rec_fix) / 3
+.05f4					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.05f4	cd 00 00	cmp $0000	        cmp @w 0
+.05f7	98		tya		        tya
+=[(1,1,0),(5,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.05f8	ed 01 00	sbc $0001	        sbc @w 1
+.05fb					rec_fix
+>05fb	01 01 00			        .byte f[0], f[1], f[2]
+>05fe	05 01 00			        .byte f[0], f[1], f[2]
+.0601					rec_end
+.0601					T_CMPW_EQC
+=101					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0601	06				        .byte rec_fix - rec_code
+>0602	02				        .byte (rec_end - rec_fix) / 3
+.0603					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0603	c9 00		cmp #$00	        cmp #0
+.0605	d0 02		bne $0609	        bne done
+=[(1,2,0),(5,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.0607	c0 00		cpy #$00	        cpy #0
+.0609					done
+.0609					rec_fix
+>0609	01 02 00			        .byte f[0], f[1], f[2]
+>060c	05 03 00			        .byte f[0], f[1], f[2]
+.060f					rec_end
+.060f					T_CMPW_EQV
+=102					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>060f	08				        .byte rec_fix - rec_code
+>0610	02				        .byte (rec_end - rec_fix) / 3
+.0611					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0611	cd 00 00	cmp $0000	        cmp @w 0
+.0614	d0 03		bne $0619	        bne done
+=[(1,1,0),(6,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0616	cc 01 00	cpy $0001	        cpy @w 1
+.0619					done
+.0619					rec_fix
+>0619	01 01 00			        .byte f[0], f[1], f[2]
+>061c	06 01 00			        .byte f[0], f[1], f[2]
+.061f					rec_end
+.061f					T_INCB_V
+=103					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>061f	03				        .byte rec_fix - rec_code
+>0620	01				        .byte (rec_end - rec_fix) / 3
+.0621					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0621	ee 00 00	inc $0000	        inc @w 0
+.0624					rec_fix
+>0624	01 01 00			        .byte f[0], f[1], f[2]
+.0627					rec_end
+.0627					T_DECB_V
+=104					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0627	03				        .byte rec_fix - rec_code
+>0628	01				        .byte (rec_end - rec_fix) / 3
+.0629					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0629	ce 00 00	dec $0000	        dec @w 0
+.062c					rec_fix
+>062c	01 01 00			        .byte f[0], f[1], f[2]
+.062f					rec_end
+.062f					T_DECW_V
+=105					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>062f	0b				        .byte rec_fix - rec_code
+>0630	03				        .byte (rec_end - rec_fix) / 3
+.0631					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0631	ad 00 00	lda $0000	        lda @w 0
+.0634	d0 03		bne $0639	        bne skip
+=[(1,1,0),(6,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0636	ce 01 00	dec $0001	        dec @w 1
+.0639					skip
+=[(1,1,0),(6,1,0),(9,1,0)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0639	ce 00 00	dec $0000	        dec @w 0
+.063c					rec_fix
+>063c	01 01 00			        .byte f[0], f[1], f[2]
+>063f	06 01 00			        .byte f[0], f[1], f[2]
+>0642	09 01 00			        .byte f[0], f[1], f[2]
+.0645					rec_end
+.0645					T_ADDB_C
+=106					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0645	03				        .byte rec_fix - rec_code
+>0646	01				        .byte (rec_end - rec_fix) / 3
+.0647					rec_code
+.0647	18		clc		        clc
+=[(2,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0648	69 00		adc #$00	        adc #0
+.064a					rec_fix
+>064a	02 02 00			        .byte f[0], f[1], f[2]
+.064d					rec_end
+.064d					T_SUBB_C
+=107					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>064d	03				        .byte rec_fix - rec_code
+>064e	01				        .byte (rec_end - rec_fix) / 3
+.064f					rec_code
+.064f	38		sec		        sec
+=[(2,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0650	e9 00		sbc #$00	        sbc #0
+.0652					rec_fix
+>0652	02 02 00			        .byte f[0], f[1], f[2]
+.0655					rec_end
+.0655					T_ADDW_C
+=108					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0655	09				        .byte rec_fix - rec_code
+>0656	02				        .byte (rec_end - rec_fix) / 3
+.0657					rec_code
+.0657	18		clc		        clc
+=[(2,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0658	69 00		adc #$00	        adc #0
+.065a	48		pha		        pha
+.065b	98		tya		        tya
+=[(2,2,0),(6,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.065c	69 00		adc #$00	        adc #0
+.065e	a8		tay		        tay
+.065f	68		pla		        pla
+.0660					rec_fix
+>0660	02 02 00			        .byte f[0], f[1], f[2]
+>0663	06 03 00			        .byte f[0], f[1], f[2]
+.0666					rec_end
+.0666					T_SUBW_C
+=109					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0666	09				        .byte rec_fix - rec_code
+>0667	02				        .byte (rec_end - rec_fix) / 3
+.0668					rec_code
+.0668	38		sec		        sec
+=[(2,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0669	e9 00		sbc #$00	        sbc #0
+.066b	48		pha		        pha
+.066c	98		tya		        tya
+=[(2,2,0),(6,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.066d	e9 00		sbc #$00	        sbc #0
+.066f	a8		tay		        tay
+.0670	68		pla		        pla
+.0671					rec_fix
+>0671	02 02 00			        .byte f[0], f[1], f[2]
+>0674	06 03 00			        .byte f[0], f[1], f[2]
+.0677					rec_end
+.0677					T_RPTW_SET
+=110					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0677	0e				        .byte rec_fix - rec_code
+>0678	03				        .byte (rec_end - rec_fix) / 3
+.0679					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0679	8d 00 00	sta $0000	        sta @w 0
+.067c	c9 01		cmp #$01	        cmp #1                  ; C = the low byte is not 0
+.067e	98		tya		        tya
+.067f	69 00		adc #$00	        adc #0
+=[(1,1,0),(9,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0681	8d 01 00	sta $0001	        sta @w 1
+=[(1,1,0),(9,1,0),(12,1,0)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0684	0d 00 00	ora $0000	        ora @w 0
+.0687					rec_fix
+>0687	01 01 00			        .byte f[0], f[1], f[2]
+>068a	09 01 00			        .byte f[0], f[1], f[2]
+>068d	0c 01 00			        .byte f[0], f[1], f[2]
+.0690					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\T-ARRAY.ASM
+
+.0690					T_LDB_AY
+=111					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0690	04				        .byte rec_fix - rec_code
+>0691	01				        .byte (rec_end - rec_fix) / 3
+.0692					rec_code
+.0692	a8		tay		        tay
+=[(2,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0693	b9 00 00	lda $0000,y	        lda @w 0, y
+.0696					rec_fix
+>0696	02 01 00			        .byte f[0], f[1], f[2]
+.0699					rec_end
+.0699					T_STB_SY
+=112					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0699	07				        .byte rec_fix - rec_code
+>069a	01				        .byte (rec_end - rec_fix) / 3
+.069b					rec_code
+.069b	ca		dex		        dex
+.069c	ca		dex		        dex
+.069d	b4 30		ldy $30,x	        ldy ESTK,x
+=[(5,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.069f	99 00 00	sta $0000,y	        sta @w 0, y
+.06a2					rec_fix
+>06a2	05 01 00			        .byte f[0], f[1], f[2]
+.06a5					rec_end
+.06a5					T_IDXB
+=113					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>06a5	09				        .byte rec_fix - rec_code
+>06a6	02				        .byte (rec_end - rec_fix) / 3
+.06a7					rec_code
+.06a7	18		clc		        clc
+=[(2,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.06a8	69 00		adc #$00	        adc #0
+.06aa	48		pha		        pha
+.06ab	98		tya		        tya
+=[(2,2,0),(6,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.06ac	69 00		adc #$00	        adc #0
+.06ae	a8		tay		        tay
+.06af	68		pla		        pla
+.06b0					rec_fix
+>06b0	02 02 00			        .byte f[0], f[1], f[2]
+>06b3	06 03 00			        .byte f[0], f[1], f[2]
+.06b6					rec_end
+.06b6					T_IDXW
+=114					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>06b6	0f				        .byte rec_fix - rec_code
+>06b7	02				        .byte (rec_end - rec_fix) / 3
+.06b8					rec_code
+.06b8	0a		asl a		        asl a
+.06b9	48		pha		        pha
+.06ba	98		tya		        tya
+.06bb	2a		rol a		        rol a
+.06bc	a8		tay		        tay
+.06bd	68		pla		        pla
+.06be	18		clc		        clc
+=[(8,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.06bf	69 00		adc #$00	        adc #0
+.06c1	48		pha		        pha
+.06c2	98		tya		        tya
+=[(8,2,0),(12,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.06c3	69 00		adc #$00	        adc #0
+.06c5	a8		tay		        tay
+.06c6	68		pla		        pla
+.06c7					rec_fix
+>06c7	08 02 00			        .byte f[0], f[1], f[2]
+>06ca	0c 03 00			        .byte f[0], f[1], f[2]
+.06cd					rec_end
+.06cd					T_PEEKW
+=115					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>06cd	0b				        .byte rec_fix - rec_code
+>06ce	00				        .byte (rec_end - rec_fix) / 3
+.06cf					rec_code
+.06cf	85 22		sta $22		        sta ZP_PTR
+.06d1	84 23		sty $23		        sty ZP_PTR+1
+.06d3	a0 01		ldy #$01	        ldy #1
+.06d5	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.06d7	a8		tay		        tay
+.06d8	b2 22		lda ($22)	        lda (ZP_PTR)
+.06da					rec_fix
+.06da					rec_end
+.06da					T_POKEW
+=116					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>06da	0d				        .byte rec_fix - rec_code
+>06db	00				        .byte (rec_end - rec_fix) / 3
+.06dc					rec_code
+.06dc	ca		dex		        dex
+.06dd	ca		dex		        dex
+.06de	81 30		sta ($30,x)	        sta (ESTK,x)
+.06e0	f6 30		inc $30,x	        inc ESTK,x
+.06e2	d0 02		bne $06e6	        bne +
+.06e4	f6 31		inc $31,x	        inc ESTK+1,x
+.06e6	98		tya		+       tya
+.06e7	81 30		sta ($30,x)	        sta (ESTK,x)
+.06e9					rec_fix
+.06e9					rec_end
+.06e9					T_CHKB
+=117					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>06e9	07				        .byte rec_fix - rec_code
+>06ea	02				        .byte (rec_end - rec_fix) / 3
+.06eb					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.06eb	c9 00		cmp #$00	        cmp #0
+.06ed	90 03		bcc $06f2	        bcc ok
+=[(1,2,0),(5,5,86)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_ESUB.rec_id)]
+.06ef	20 00 00	jsr $0000	        jsr @w 0
+.06f2					ok
+.06f2					rec_fix
+>06f2	01 02 00			        .byte f[0], f[1], f[2]
+>06f5	05 05 56			        .byte f[0], f[1], f[2]
+.06f8					rec_end
+.06f8					T_CHKW
+=118					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>06f8	0d				        .byte rec_fix - rec_code
+>06f9	03				        .byte (rec_end - rec_fix) / 3
+.06fa					rec_code
+=[(1,3,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.06fa	c0 00		cpy #$00	        cpy #0
+.06fc	90 09		bcc $0707	        bcc ok
+.06fe	d0 04		bne $0704	        bne bad
+=[(1,3,0),(7,2,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0700	c9 00		cmp #$00	        cmp #0
+.0702	90 03		bcc $0707	        bcc ok
+.0704					bad
+=[(1,3,0),(7,2,0),(11,5,86)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_ESUB.rec_id)]
+.0704	20 00 00	jsr $0000	        jsr @w 0
+.0707					ok
+.0707					rec_fix
+>0707	01 03 00			        .byte f[0], f[1], f[2]
+>070a	07 02 00			        .byte f[0], f[1], f[2]
+>070d	0b 05 56			        .byte f[0], f[1], f[2]
+.0710					rec_end
+.0710					T_ZERO
+=119					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0710	13				        .byte rec_fix - rec_code
+>0711	05				        .byte (rec_end - rec_fix) / 3
+.0712					rec_code
+=[(1,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0712	a9 00		lda #$00	        lda #0
+.0714	85 22		sta $22		        sta ZP_PTR
+=[(1,2,0),(5,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.0716	a9 00		lda #$00	        lda #0
+.0718	85 23		sta $23		        sta ZP_PTR+1
+=[(1,2,0),(5,3,0),(9,2,1)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S1)]
+.071a	a9 00		lda #$00	        lda #0
+.071c	85 24		sta $24		        sta ZP_TMP
+=[(1,2,0),(5,3,0),(9,2,1),(13,3,1)]	        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S1)]
+.071e	a9 00		lda #$00	        lda #0
+.0720	85 25		sta $25		        sta ZP_TMP+1
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_ZERO.rec_id)]
+.0722	20 00 00	jsr $0000	        jsr @w 0
+.0725					rec_fix
+>0725	01 02 00			        .byte f[0], f[1], f[2]
+>0728	05 03 00			        .byte f[0], f[1], f[2]
+>072b	09 02 01			        .byte f[0], f[1], f[2]
+>072e	0d 03 01			        .byte f[0], f[1], f[2]
+>0731	11 05 78			        .byte f[0], f[1], f[2]
+.0734					rec_end
+.0734					R_ZERO
+=120					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0734	1f				        .byte rec_fix - rec_code
+>0735	00				        .byte (rec_end - rec_fix) / 3
+.0736					rec_code
+.0736	da		phx		        phx
+.0737	a6 25		ldx $25		        ldx ZP_TMP+1            ; the whole pages
+.0739	a0 00		ldy #$00	        ldy #0
+.073b	98		tya		        tya
+.073c	e0 00		cpx #$00	page    cpx #0
+.073e	f0 0a		beq $074a	        beq part
+.0740	91 22		sta ($22),y	whole   sta (ZP_PTR),y
+.0742	c8		iny		        iny
+.0743	d0 fb		bne $0740	        bne whole
+.0745	e6 23		inc $23		        inc ZP_PTR+1
+.0747	ca		dex		        dex
+.0748	80 f2		bra $073c	        bra page
+.074a	a4 24		ldy $24		part    ldy ZP_TMP              ; the rest, from the top down
+.074c	f0 05		beq $0753	        beq done
+.074e	88		dey		rest    dey
+.074f	91 22		sta ($22),y	        sta (ZP_PTR),y
+.0751	d0 fb		bne $074e	        bne rest
+.0753	fa		plx		done    plx
+.0754	60		rts		        rts
+.0755					rec_fix
+.0755					rec_end
+.0755					T_GETKEY
+=121					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0755	05				        .byte rec_fix - rec_code
+>0756	01				        .byte (rec_end - rec_fix) / 3
+.0757					rec_code
+.0757	da		phx		        phx
+=[(2,5,37)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_GETIN.rec_id)]
+.0758	20 00 00	jsr $0000	        jsr @w 0
+.075b	fa		plx		        plx
+.075c					rec_fix
+>075c	02 05 25			        .byte f[0], f[1], f[2]
+.075f					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\T-STRING.ASM
+
+.075f					T_SCOPY
+=122					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>075f	0c				        .byte rec_fix - rec_code
+>0760	03				        .byte (rec_end - rec_fix) / 3
+.0761					rec_code
+.0761	85 22		sta $22		        sta ZP_PTR
+.0763	84 23		sty $23		        sty ZP_PTR+1
+=[(5,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.0765	a9 00		lda #$00	        lda #0
+=[(5,2,0),(7,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.0767	a0 00		ldy #$00	        ldy #0
+.0769	18		clc		        clc
+=[(5,2,0),(7,3,0),(10,5,140)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_SCAT.rec_id)]
+.076a	20 00 00	jsr $0000	        jsr @w 0
+.076d					rec_fix
+>076d	05 02 00			        .byte f[0], f[1], f[2]
+>0770	07 03 00			        .byte f[0], f[1], f[2]
+>0773	0a 05 8c			        .byte f[0], f[1], f[2]
+.0776					rec_end
+.0776					T_SCOPY_P
+=123					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0776	0e				        .byte rec_fix - rec_code
+>0777	03				        .byte (rec_end - rec_fix) / 3
+.0778					rec_code
+.0778	85 22		sta $22		        sta ZP_PTR
+.077a	84 23		sty $23		        sty ZP_PTR+1
+=[(5,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.077c	ad 00 00	lda $0000	        lda @w 0
+=[(5,1,0),(8,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.077f	ac 01 00	ldy $0001	        ldy @w 1
+.0782	18		clc		        clc
+=[(5,1,0),(8,1,0),(12,5,140)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_SCAT.rec_id)]
+.0783	20 00 00	jsr $0000	        jsr @w 0
+.0786					rec_fix
+>0786	05 01 00			        .byte f[0], f[1], f[2]
+>0789	08 01 00			        .byte f[0], f[1], f[2]
+>078c	0c 05 8c			        .byte f[0], f[1], f[2]
+.078f					rec_end
+.078f					T_SCLEAR
+=124					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>078f	03				        .byte rec_fix - rec_code
+>0790	01				        .byte (rec_end - rec_fix) / 3
+.0791					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.0791	9c 01 00	stz $0001	        stz @w 1
+.0794					rec_fix
+>0794	01 01 00			        .byte f[0], f[1], f[2]
+.0797					rec_end
+.0797					T_SCAT
+=125					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0797	0c				        .byte rec_fix - rec_code
+>0798	03				        .byte (rec_end - rec_fix) / 3
+.0799					rec_code
+.0799	85 22		sta $22		        sta ZP_PTR
+.079b	84 23		sty $23		        sty ZP_PTR+1
+=[(5,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.079d	a9 00		lda #$00	        lda #0
+=[(5,2,0),(7,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.079f	a0 00		ldy #$00	        ldy #0
+.07a1	38		sec		        sec
+=[(5,2,0),(7,3,0),(10,5,140)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_SCAT.rec_id)]
+.07a2	20 00 00	jsr $0000	        jsr @w 0
+.07a5					rec_fix
+>07a5	05 02 00			        .byte f[0], f[1], f[2]
+>07a8	07 03 00			        .byte f[0], f[1], f[2]
+>07ab	0a 05 8c			        .byte f[0], f[1], f[2]
+.07ae					rec_end
+.07ae					T_SCMP_LR
+=126					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>07ae	04				        .byte rec_fix - rec_code
+>07af	01				        .byte (rec_end - rec_fix) / 3
+.07b0					rec_code
+.07b0	18		clc		        clc
+=[(2,5,141)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_SCMP.rec_id)]
+.07b1	20 00 00	jsr $0000	        jsr @w 0
+.07b4					rec_fix
+>07b4	02 05 8d			        .byte f[0], f[1], f[2]
+.07b7					rec_end
+.07b7					T_SCMP_RL
+=127					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>07b7	04				        .byte rec_fix - rec_code
+>07b8	01				        .byte (rec_end - rec_fix) / 3
+.07b9					rec_code
+.07b9	38		sec		        sec
+=[(2,5,141)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_SCMP.rec_id)]
+.07ba	20 00 00	jsr $0000	        jsr @w 0
+.07bd					rec_fix
+>07bd	02 05 8d			        .byte f[0], f[1], f[2]
+.07c0					rec_end
+.07c0					T_SLEN
+=128					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>07c0	08				        .byte rec_fix - rec_code
+>07c1	00				        .byte (rec_end - rec_fix) / 3
+.07c2					rec_code
+.07c2	85 22		sta $22		        sta ZP_PTR
+.07c4	84 23		sty $23		        sty ZP_PTR+1
+.07c6	a0 01		ldy #$01	        ldy #1
+.07c8	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.07ca					rec_fix
+.07ca					rec_end
+.07ca					T_ASC
+=129					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>07ca	0d				        .byte rec_fix - rec_code
+>07cb	00				        .byte (rec_end - rec_fix) / 3
+.07cc					rec_code
+.07cc	85 22		sta $22		        sta ZP_PTR
+.07ce	84 23		sty $23		        sty ZP_PTR+1
+.07d0	a0 01		ldy #$01	        ldy #1
+.07d2	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.07d4	f0 03		beq $07d9	        beq done
+.07d6	c8		iny		        iny
+.07d7	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.07d9					done
+.07d9					rec_fix
+.07d9					rec_end
+.07d9					T_CHR
+=130					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>07d9	08				        .byte rec_fix - rec_code
+>07da	02				        .byte (rec_end - rec_fix) / 3
+.07db					rec_code
+=[(1,1,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.07db	8d 02 00	sta $0002	        sta @w 2
+.07de	a9 01		lda #$01	        lda #1
+=[(1,1,0),(6,1,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_ABS, S0)]
+.07e0	8d 01 00	sta $0001	        sta @w 1
+.07e3					rec_fix
+>07e3	01 01 00			        .byte f[0], f[1], f[2]
+>07e6	06 01 00			        .byte f[0], f[1], f[2]
+.07e9					rec_end
+.07e9					T_STR
+=131					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>07e9	0b				        .byte rec_fix - rec_code
+>07ea	03				        .byte (rec_end - rec_fix) / 3
+.07eb					rec_code
+.07eb	85 24		sta $24		        sta ZP_TMP
+.07ed	84 25		sty $25		        sty ZP_TMP+1
+=[(5,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.07ef	a9 00		lda #$00	        lda #0
+=[(5,2,0),(7,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.07f1	a0 00		ldy #$00	        ldy #0
+=[(5,2,0),(7,3,0),(9,5,142)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_STR.rec_id)]
+.07f3	20 00 00	jsr $0000	        jsr @w 0
+.07f6					rec_fix
+>07f6	05 02 00			        .byte f[0], f[1], f[2]
+>07f9	07 03 00			        .byte f[0], f[1], f[2]
+>07fc	09 05 8e			        .byte f[0], f[1], f[2]
+.07ff					rec_end
+.07ff					T_VAL
+=132					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>07ff	03				        .byte rec_fix - rec_code
+>0800	01				        .byte (rec_end - rec_fix) / 3
+.0801					rec_code
+=[(1,5,143)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_VAL.rec_id)]
+.0801	20 00 00	jsr $0000	        jsr @w 0
+.0804					rec_fix
+>0804	01 05 8f			        .byte f[0], f[1], f[2]
+.0807					rec_end
+.0807					T_MID
+=133					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0807	0b				        .byte rec_fix - rec_code
+>0808	03				        .byte (rec_end - rec_fix) / 3
+.0809					rec_code
+.0809	85 24		sta $24		        sta ZP_TMP
+.080b	84 25		sty $25		        sty ZP_TMP+1
+=[(5,2,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_LO, S0)]
+.080d	a9 00		lda #$00	        lda #0
+=[(5,2,0),(7,3,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_HI, S0)]
+.080f	a0 00		ldy #$00	        ldy #0
+=[(5,2,0),(7,3,0),(9,5,144)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_MID.rec_id)]
+.0811	20 00 00	jsr $0000	        jsr @w 0
+.0814					rec_fix
+>0814	05 02 00			        .byte f[0], f[1], f[2]
+>0817	07 03 00			        .byte f[0], f[1], f[2]
+>081a	09 05 90			        .byte f[0], f[1], f[2]
+.081d					rec_end
+.081d					T_INSTR
+=134					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>081d	03				        .byte rec_fix - rec_code
+>081e	01				        .byte (rec_end - rec_fix) / 3
+.081f					rec_code
+=[(1,5,145)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_INSTR.rec_id)]
+.081f	20 00 00	jsr $0000	        jsr @w 0
+.0822					rec_fix
+>0822	01 05 91			        .byte f[0], f[1], f[2]
+.0825					rec_end
+.0825					T_INPUT
+=135					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0825	04				        .byte rec_fix - rec_code
+>0826	01				        .byte (rec_end - rec_fix) / 3
+.0827					rec_code
+.0827	38		sec		        sec
+=[(2,5,146)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_INPUT.rec_id)]
+.0828	20 00 00	jsr $0000	        jsr @w 0
+.082b					rec_fix
+>082b	02 05 92			        .byte f[0], f[1], f[2]
+.082e					rec_end
+.082e					T_INPUT_FIRST
+=136					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>082e	04				        .byte rec_fix - rec_code
+>082f	01				        .byte (rec_end - rec_fix) / 3
+.0830					rec_code
+.0830	18		clc		        clc
+=[(2,5,146)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_INPUT.rec_id)]
+.0831	20 00 00	jsr $0000	        jsr @w 0
+.0834					rec_fix
+>0834	02 05 92			        .byte f[0], f[1], f[2]
+.0837					rec_end
+.0837					T_INPUT_NEXT
+=137					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0837	04				        .byte rec_fix - rec_code
+>0838	01				        .byte (rec_end - rec_fix) / 3
+.0839					rec_code
+.0839	18		clc		        clc
+=[(2,5,146)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_INPUT.rec_id)]
+.083a	20 0e 00	jsr $000e	        jsr @w R_INPUT.field - R_INPUT.rec_code
+.083d					rec_fix
+>083d	02 05 92			        .byte f[0], f[1], f[2]
+.0840					rec_end
+.0840					T_INPUT_LAST
+=138					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0840	04				        .byte rec_fix - rec_code
+>0841	01				        .byte (rec_end - rec_fix) / 3
+.0842					rec_code
+.0842	38		sec		        sec
+=[(2,5,146)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_INPUT.rec_id)]
+.0843	20 0e 00	jsr $000e	        jsr @w R_INPUT.field - R_INPUT.rec_code
+.0846					rec_fix
+>0846	02 05 92			        .byte f[0], f[1], f[2]
+.0849					rec_end
+.0849					T_LINPUT
+=139					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0849	03				        .byte rec_fix - rec_code
+>084a	01				        .byte (rec_end - rec_fix) / 3
+.084b					rec_code
+=[(1,5,146)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_INPUT.rec_id)]
+.084b	20 12 00	jsr $0012	        jsr @w R_INPUT.line - R_INPUT.rec_code
+.084e					rec_fix
+>084e	01 05 92			        .byte f[0], f[1], f[2]
+.0851					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\R-STRING.ASM
+
+.0851					R_SCAT
+=140					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0851	3f				        .byte rec_fix - rec_code
+>0852	00				        .byte (rec_end - rec_fix) / 3
+.0853					rec_code
+.0853	85 28		sta $28		        sta ZP_DST
+.0855	84 29		sty $29		        sty ZP_DST+1
+.0857	a9 00		lda #$00	        lda #0                  ; a copy starts at 0
+.0859	90 04		bcc $085f	        bcc +
+.085b	a0 01		ldy #$01	        ldy #1
+.085d	b1 28		lda ($28),y	        lda (ZP_DST),y          ; an append starts after the text there
+.085f	85 24		sta $24		+       sta ZP_TMP
+.0861	b2 28		lda ($28)	        lda (ZP_DST)            ; the room: max - start
+.0863	38		sec		        sec
+.0864	e5 24		sbc $24		        sbc ZP_TMP
+.0866	a0 01		ldy #$01	        ldy #1
+.0868	d1 22		cmp ($22),y	        cmp (ZP_PTR),y
+.086a	90 02		bcc $086e	        bcc +                   ; less room than text: cut
+.086c	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.086e	85 25		sta $25		+       sta ZP_TMP+1            ; the characters to copy
+.0870	18		clc		        clc
+.0871	65 24		adc $24		        adc ZP_TMP
+.0873	91 28		sta ($28),y	        sta (ZP_DST),y          ; the new length
+.0875	a4 25		ldy $25		        ldy ZP_TMP+1
+.0877	f0 18		beq $0891	        beq done
+.0879	e6 22		inc $22		        inc ZP_PTR              ; (ZP_PTR),y with y = 1 is the first source character
+.087b	d0 02		bne $087f	        bne +
+.087d	e6 23		inc $23		        inc ZP_PTR+1
+.087f	a5 28		lda $28		+       lda ZP_DST              ; (ZP_DST),y with y = 1 is the first character after start
+.0881	38		sec		        sec
+.0882	65 24		adc $24		        adc ZP_TMP
+.0884	85 28		sta $28		        sta ZP_DST
+.0886	90 02		bcc $088a	        bcc copy
+.0888	e6 29		inc $29		        inc ZP_DST+1
+.088a	b1 22		lda ($22),y	copy    lda (ZP_PTR),y
+.088c	91 28		sta ($28),y	        sta (ZP_DST),y
+.088e	88		dey		        dey
+.088f	d0 f9		bne $088a	        bne copy
+.0891	60		rts		done    rts
+.0892					rec_fix
+.0892					rec_end
+.0892					R_SCMP
+=141					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0892	4b				        .byte rec_fix - rec_code
+>0893	00				        .byte (rec_end - rec_fix) / 3
+.0894					rec_code
+.0894	ca		dex		        dex
+.0895	ca		dex		        dex
+.0896	90 0e		bcc $08a6	        bcc lr
+.0898	85 22		sta $22		        sta ZP_PTR
+.089a	84 23		sty $23		        sty ZP_PTR+1
+.089c	b5 30		lda $30,x	        lda ESTK,x
+.089e	85 28		sta $28		        sta ZP_DST
+.08a0	b5 31		lda $31,x	        lda ESTK+1,x
+.08a2	85 29		sta $29		        sta ZP_DST+1
+.08a4	80 0c		bra $08b2	        bra lens
+.08a6	85 28		sta $28		lr      sta ZP_DST
+.08a8	84 29		sty $29		        sty ZP_DST+1
+.08aa	b5 30		lda $30,x	        lda ESTK,x
+.08ac	85 22		sta $22		        sta ZP_PTR
+.08ae	b5 31		lda $31,x	        lda ESTK+1,x
+.08b0	85 23		sta $23		        sta ZP_PTR+1
+.08b2	a0 01		ldy #$01	lens    ldy #1
+.08b4	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.08b6	85 24		sta $24		        sta ZP_TMP              ; the length of P
+.08b8	b1 28		lda ($28),y	        lda (ZP_DST),y
+.08ba	85 25		sta $25		        sta ZP_TMP+1            ; the length of Q
+.08bc	e6 22		inc $22		        inc ZP_PTR              ; (ZP_PTR),y with y = 1 is the first character
+.08be	d0 02		bne $08c2	        bne +
+.08c0	e6 23		inc $23		        inc ZP_PTR+1
+.08c2	e6 28		inc $28		+       inc ZP_DST
+.08c4	d0 02		bne $08c8	        bne +
+.08c6	e6 29		inc $29		        inc ZP_DST+1
+.08c8	a0 00		ldy #$00	+       ldy #0
+.08ca	c4 24		cpy $24		loop    cpy ZP_TMP
+.08cc	f0 0c		beq $08da	        beq last
+.08ce	c4 25		cpy $25		        cpy ZP_TMP+1
+.08d0	f0 08		beq $08da	        beq last
+.08d2	c8		iny		        iny
+.08d3	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.08d5	d1 28		cmp ($28),y	        cmp (ZP_DST),y
+.08d7	f0 f1		beq $08ca	        beq loop
+.08d9	60		rts		        rts
+.08da	a5 24		lda $24		last    lda ZP_TMP
+.08dc	c5 25		cmp $25		        cmp ZP_TMP+1
+.08de	60		rts		        rts
+.08df					rec_fix
+.08df					rec_end
+.08df					R_STR
+=142					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>08df	52				        .byte rec_fix - rec_code
+>08e0	02				        .byte (rec_end - rec_fix) / 3
+.08e1					rec_code
+.08e1	85 28		sta $28		        sta ZP_DST
+.08e3	84 29		sty $29		        sty ZP_DST+1
+.08e5	da		phx		        phx
+.08e6	a0 02		ldy #$02	        ldy #2
+.08e8	a9 20		lda #$20	        lda #" "                ; the sign: a WORD is never negative
+.08ea	91 28		sta ($28),y	        sta (ZP_DST),y
+.08ec	a2 00		ldx #$00	        ldx #0
+.08ee	a9 30		lda #$30	digit   lda #"0"
+.08f0	85 23		sta $23		        sta ZP_PTR+1
+.08f2	a5 24		lda $24		sub     lda ZP_TMP              ; count how many times the power of ten goes
+.08f4	38		sec		        sec
+=[(21,4,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.08f5	fd 4a 00	sbc $004a,x	        sbc @w tens_lo - rec_code, x
+.08f8	48		pha		        pha
+.08f9	a5 25		lda $25		        lda ZP_TMP+1
+=[(21,4,0),(27,4,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.08fb	fd 4e 00	sbc $004e,x	        sbc @w tens_hi - rec_code, x
+.08fe	90 09		bcc $0909	        bcc out
+.0900	85 25		sta $25		        sta ZP_TMP+1
+.0902	68		pla		        pla
+.0903	85 24		sta $24		        sta ZP_TMP
+.0905	e6 23		inc $23		        inc ZP_PTR+1
+.0907	80 e9		bra $08f2	        bra sub
+.0909	68		pla		out     pla
+.090a	a5 23		lda $23		        lda ZP_PTR+1
+.090c	c9 30		cmp #$30	        cmp #"0"
+.090e	d0 04		bne $0914	        bne show
+.0910	c0 03		cpy #$03	        cpy #3
+.0912	90 03		bcc $0917	        bcc next                ; only the sign is written: a leading zero
+.0914	c8		iny		show    iny
+.0915	91 28		sta ($28),y	        sta (ZP_DST),y
+.0917	e8		inx		next    inx
+.0918	e0 04		cpx #$04	        cpx #4
+.091a	d0 d2		bne $08ee	        bne digit
+.091c	a5 24		lda $24		        lda ZP_TMP              ; the ones, always written
+.091e	09 30		ora #$30	        ora #"0"
+.0920	c8		iny		        iny
+.0921	91 28		sta ($28),y	        sta (ZP_DST),y
+.0923	98		tya		        tya                     ; the length: the last offset - 1
+.0924	3a		dec a		        dec a
+.0925	a0 01		ldy #$01	        ldy #1
+.0927	91 28		sta ($28),y	        sta (ZP_DST),y
+.0929	fa		plx		        plx
+.092a	60		rts		        rts
+>092b	10 e8 64 0a			tens_lo .byte <10000, <1000, <100, <10
+>092f	27 03 00 00			tens_hi .byte >10000, >1000, >100, >10
+.0933					rec_fix
+>0933	15 04 00			        .byte f[0], f[1], f[2]
+>0936	1b 04 00			        .byte f[0], f[1], f[2]
+.0939					rec_end
+.0939					R_VAL
+=143					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0939	7d				        .byte rec_fix - rec_code
+>093a	02				        .byte (rec_end - rec_fix) / 3
+.093b					rec_code
+.093b	85 22		sta $22		        sta ZP_PTR
+.093d	84 23		sty $23		        sty ZP_PTR+1
+.093f	da		phx		        phx
+.0940	64 24		stz $24		        stz ZP_TMP              ; the value
+.0942	64 25		stz $25		        stz ZP_TMP+1
+.0944	a0 01		ldy #$01	        ldy #1
+.0946	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.0948	aa		tax		        tax                     ; the characters left
+.0949	e6 22		inc $22		        inc ZP_PTR              ; (ZP_PTR),y with y = 1 is the first character
+.094b	d0 02		bne $094f	        bne +
+.094d	e6 23		inc $23		        inc ZP_PTR+1
+.094f					+
+=[(21,4,0)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.094f	20 19 00	jsr $0019	        jsr @w skip - rec_code
+.0952	fa		plx		        plx
+.0953	60		rts		        rts
+.0954	8a		txa		skip    txa
+.0955	f0 5c		beq $09b3	        beq done
+.0957	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.0959	c8		iny		        iny
+.095a	ca		dex		        dex
+.095b	c9 20		cmp #$20	        cmp #" "
+.095d	f0 f5		beq $0954	        beq skip
+.095f	c9 2b		cmp #$2b	        cmp #"+"
+.0961	f0 f1		beq $0954	        beq skip
+.0963	c9 2d		cmp #$2d	        cmp #"-"
+.0965	f0 3c		beq $09a3	        beq minus
+.0967	38		sec		digit   sec
+.0968	e9 30		sbc #$30	        sbc #"0"
+.096a	c9 0a		cmp #$0a	        cmp #10
+.096c	b0 45		bcs $09b3	        bcs done                ; not a digit
+.096e	48		pha		        pha
+.096f	a5 24		lda $24		        lda ZP_TMP              ; the value x 10: x 4, + the value, x 2
+.0971	85 28		sta $28		        sta ZP_DST
+.0973	a5 25		lda $25		        lda ZP_TMP+1
+.0975	85 29		sta $29		        sta ZP_DST+1
+.0977	06 24		asl $24		        asl ZP_TMP
+.0979	26 25		rol $25		        rol ZP_TMP+1
+.097b	06 24		asl $24		        asl ZP_TMP
+.097d	26 25		rol $25		        rol ZP_TMP+1
+.097f	18		clc		        clc
+.0980	a5 24		lda $24		        lda ZP_TMP
+.0982	65 28		adc $28		        adc ZP_DST
+.0984	85 24		sta $24		        sta ZP_TMP
+.0986	a5 25		lda $25		        lda ZP_TMP+1
+.0988	65 29		adc $29		        adc ZP_DST+1
+.098a	85 25		sta $25		        sta ZP_TMP+1
+.098c	06 24		asl $24		        asl ZP_TMP
+.098e	26 25		rol $25		        rol ZP_TMP+1
+.0990	68		pla		        pla                     ; + the digit
+.0991	18		clc		        clc
+.0992	65 24		adc $24		        adc ZP_TMP
+.0994	85 24		sta $24		        sta ZP_TMP
+.0996	90 02		bcc $099a	        bcc more
+.0998	e6 25		inc $25		        inc ZP_TMP+1
+.099a	8a		txa		more    txa
+.099b	f0 16		beq $09b3	        beq done
+.099d	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.099f	c8		iny		        iny
+.09a0	ca		dex		        dex
+.09a1	80 c4		bra $0967	        bra digit
+.09a3					minus
+=[(21,4,0),(105,4,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.09a3	20 5f 00	jsr $005f	        jsr @w more - rec_code
+.09a6	a9 00		lda #$00	        lda #0
+.09a8	38		sec		        sec
+.09a9	e5 24		sbc $24		        sbc ZP_TMP
+.09ab	85 24		sta $24		        sta ZP_TMP
+.09ad	a9 00		lda #$00	        lda #0
+.09af	e5 25		sbc $25		        sbc ZP_TMP+1
+.09b1	85 25		sta $25		        sta ZP_TMP+1
+.09b3	a5 24		lda $24		done    lda ZP_TMP
+.09b5	a4 25		ldy $25		        ldy ZP_TMP+1
+.09b7	60		rts		        rts
+.09b8					rec_fix
+>09b8	15 04 00			        .byte f[0], f[1], f[2]
+>09bb	69 04 00			        .byte f[0], f[1], f[2]
+.09be					rec_end
+.09be					R_MID
+=144					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>09be	54				        .byte rec_fix - rec_code
+>09bf	00				        .byte (rec_end - rec_fix) / 3
+.09c0					rec_code
+.09c0	85 28		sta $28		        sta ZP_DST
+.09c2	84 29		sty $29		        sty ZP_DST+1
+.09c4	a5 25		lda $25		        lda ZP_TMP+1
+.09c6	f0 04		beq $09cc	        beq +
+.09c8	a9 ff		lda #$ff	        lda #255                ; more than 255: the rest of the string
+.09ca	85 24		sta $24		        sta ZP_TMP
+.09cc	ca		dex		+       dex                     ; the start
+.09cd	ca		dex		        dex
+.09ce	a9 ff		lda #$ff	        lda #255                ; past 255: past the end of any string
+.09d0	b4 31		ldy $31,x	        ldy ESTK+1,x
+.09d2	d0 05		bne $09d9	        bne +
+.09d4	b5 30		lda $30,x	        lda ESTK,x
+.09d6	f0 01		beq $09d9	        beq +                   ; 0 is the same as 1
+.09d8	3a		dec a		        dec a
+.09d9	85 25		sta $25		+       sta ZP_TMP+1            ; the first character, counted from 0
+.09db	ca		dex		        dex                     ; the string
+.09dc	ca		dex		        dex
+.09dd	b5 30		lda $30,x	        lda ESTK,x
+.09df	85 22		sta $22		        sta ZP_PTR
+.09e1	b5 31		lda $31,x	        lda ESTK+1,x
+.09e3	85 23		sta $23		        sta ZP_PTR+1
+.09e5	a0 01		ldy #$01	        ldy #1
+.09e7	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.09e9	38		sec		        sec
+.09ea	e5 25		sbc $25		        sbc ZP_TMP+1            ; the characters from the first one on
+.09ec	b0 02		bcs $09f0	        bcs +
+.09ee	a9 00		lda #$00	        lda #0                  ; the first one is past the end
+.09f0	c5 24		cmp $24		+       cmp ZP_TMP
+.09f2	90 02		bcc $09f6	        bcc +
+.09f4	a5 24		lda $24		        lda ZP_TMP              ; the length: the shorter of the length asked and the rest
+.09f6	91 28		sta ($28),y	+       sta (ZP_DST),y
+.09f8	a8		tay		        tay
+.09f9	f0 18		beq $0a13	        beq done
+.09fb	a5 22		lda $22		        lda ZP_PTR              ; (ZP_PTR),y with y = 1 is the first character taken
+.09fd	38		sec		        sec
+.09fe	65 25		adc $25		        adc ZP_TMP+1
+.0a00	85 22		sta $22		        sta ZP_PTR
+.0a02	90 02		bcc $0a06	        bcc +
+.0a04	e6 23		inc $23		        inc ZP_PTR+1
+.0a06	e6 28		inc $28		+       inc ZP_DST              ; (ZP_DST),y with y = 1 is the first character of the temp
+.0a08	d0 02		bne $0a0c	        bne copy
+.0a0a	e6 29		inc $29		        inc ZP_DST+1
+.0a0c	b1 22		lda ($22),y	copy    lda (ZP_PTR),y
+.0a0e	91 28		sta ($28),y	        sta (ZP_DST),y
+.0a10	88		dey		        dey
+.0a11	d0 f9		bne $0a0c	        bne copy
+.0a13	60		rts		done    rts
+.0a14					rec_fix
+.0a14					rec_end
+.0a14					R_INSTR
+=145					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0a14	7b				        .byte rec_fix - rec_code
+>0a15	00				        .byte (rec_end - rec_fix) / 3
+.0a16					rec_code
+.0a16	85 24		sta $24		        sta ZP_TMP              ; the start
+.0a18	ca		dex		        dex                     ; find
+.0a19	ca		dex		        dex
+.0a1a	b5 30		lda $30,x	        lda ESTK,x
+.0a1c	85 28		sta $28		        sta ZP_DST
+.0a1e	b5 31		lda $31,x	        lda ESTK+1,x
+.0a20	85 29		sta $29		        sta ZP_DST+1
+.0a22	ca		dex		        dex                     ; the string
+.0a23	ca		dex		        dex
+.0a24	b5 30		lda $30,x	        lda ESTK,x
+.0a26	85 22		sta $22		        sta ZP_PTR
+.0a28	b5 31		lda $31,x	        lda ESTK+1,x
+.0a2a	85 23		sta $23		        sta ZP_PTR+1
+.0a2c	98		tya		        tya
+.0a2d	d0 4a		bne $0a79	        bne none                ; a start past 255
+.0a2f	a0 01		ldy #$01	        ldy #1
+.0a31	b1 28		lda ($28),y	        lda (ZP_DST),y
+.0a33	f0 44		beq $0a79	        beq none                ; an empty find
+.0a35	85 25		sta $25		        sta ZP_TMP+1            ; the length of find
+.0a37	a5 24		lda $24		        lda ZP_TMP
+.0a39	d0 02		bne $0a3d	        bne +
+.0a3b	e6 24		inc $24		        inc ZP_TMP              ; 0 is the same as 1
+.0a3d	b1 22		lda ($22),y	+       lda (ZP_PTR),y
+.0a3f	38		sec		        sec
+.0a40	e5 25		sbc $25		        sbc ZP_TMP+1
+.0a42	90 35		bcc $0a79	        bcc none                ; find is longer than the string
+.0a44	69 00		adc #$00	        adc #0                  ; C set: the last start
+.0a46	c5 24		cmp $24		        cmp ZP_TMP
+.0a48	90 2f		bcc $0a79	        bcc none                ; the start is past it
+.0a4a	da		phx		        phx
+.0a4b	a8		tay		        tay
+.0a4c	c8		iny		        iny
+.0a4d	e5 24		sbc $24		        sbc ZP_TMP              ; C set: the tries - 1
+.0a4f	aa		tax		        tax
+.0a50	e8		inx		        inx                     ; the tries, 1 to 255
+.0a51	a5 24		lda $24		        lda ZP_TMP              ; (ZP_PTR) is the character at the start
+.0a53	38		sec		        sec
+.0a54	65 22		adc $22		        adc ZP_PTR
+.0a56	85 22		sta $22		        sta ZP_PTR
+.0a58	90 02		bcc $0a5c	        bcc +
+.0a5a	e6 23		inc $23		        inc ZP_PTR+1
+.0a5c	84 24		sty $24		+       sty ZP_TMP              ; the last start + 1, so the position is ZP_TMP - X
+.0a5e	a5 28		lda $28		        lda ZP_DST              ; (ZP_DST) is the first character of find
+.0a60	18		clc		        clc
+.0a61	69 02		adc #$02	        adc #2
+.0a63	85 28		sta $28		        sta ZP_DST
+.0a65	90 02		bcc $0a69	        bcc scan
+.0a67	e6 29		inc $29		        inc ZP_DST+1
+.0a69	b2 22		lda ($22)	scan    lda (ZP_PTR)
+.0a6b	d2 28		cmp ($28)	        cmp (ZP_DST)
+.0a6d	f0 0d		beq $0a7c	        beq check
+.0a6f	e6 22		inc $22		next    inc ZP_PTR
+.0a71	d0 02		bne $0a75	        bne +
+.0a73	e6 23		inc $23		        inc ZP_PTR+1
+.0a75	ca		dex		+       dex
+.0a76	d0 f1		bne $0a69	        bne scan
+.0a78	fa		plx		        plx
+.0a79	a9 00		lda #$00	none    lda #0
+.0a7b	60		rts		        rts
+.0a7c	a4 25		ldy $25		check   ldy ZP_TMP+1            ; the first characters are the same: compare the rest
+.0a7e	88		dey		-       dey
+.0a7f	f0 08		beq $0a89	        beq found
+.0a81	b1 22		lda ($22),y	        lda (ZP_PTR),y
+.0a83	d1 28		cmp ($28),y	        cmp (ZP_DST),y
+.0a85	f0 f7		beq $0a7e	        beq -
+.0a87	80 e6		bra $0a6f	        bra next
+.0a89	8a		txa		found   txa                     ; A = ZP_TMP - X
+.0a8a	49 ff		eor #$ff	        eor #$ff
+.0a8c	38		sec		        sec
+.0a8d	65 24		adc $24		        adc ZP_TMP
+.0a8f	fa		plx		        plx
+.0a90	60		rts		        rts
+.0a91					rec_fix
+.0a91					rec_end
+.0a91					R_INPUT
+=146					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0a91	63				        .byte rec_fix - rec_code
+>0a92	05				        .byte (rec_end - rec_fix) / 3
+.0a93					rec_code
+.0a93	08		php		        php
+.0a94	48		pha		        pha
+.0a95	a9 3f		lda #$3f	        lda #"?"
+=[(5,5,35)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0a97	20 00 00	jsr $0000	        jsr @w 0
+.0a9a	a9 20		lda #$20	        lda #" "
+=[(5,5,35),(10,5,35)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0a9c	20 00 00	jsr $0000	        jsr @w 0
+.0a9f	68		pla		        pla
+.0aa0	28		plp		        plp
+.0aa1	66 25		ror $25		field   ror ZP_TMP+1            ; C: the rest after a comma is dropped
+.0aa3	38		sec		        sec                     ; a comma ends it
+>0aa4	24				        .byte $24               ; BIT zp: skips the clc
+.0aa5	18		clc		line    clc
+.0aa6	66 25		ror $25		        ror ZP_TMP+1            ; bit 7: a comma ends it. bit 6: the rest is dropped
+.0aa8	85 28		sta $28		        sta ZP_DST
+.0aaa	84 29		sty $29		        sty ZP_DST+1
+.0aac	da		phx		        phx
+.0aad	18		clc		        clc                     ; ZP_PTR: where the next character goes
+.0aae	69 02		adc #$02	        adc #2
+.0ab0	85 22		sta $22		        sta ZP_PTR
+.0ab2	98		tya		        tya
+.0ab3	69 00		adc #$00	        adc #0
+.0ab5	85 23		sta $23		        sta ZP_PTR+1
+.0ab7	64 24		stz $24		        stz ZP_TMP              ; the length
+.0ab9					next
+=[(5,5,35),(10,5,35),(39,5,38)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHRIN.rec_id)]
+.0ab9	20 00 00	jsr $0000	        jsr @w 0
+.0abc	c9 0d		cmp #$0d	        cmp #13
+.0abe	f0 11		beq $0ad1	        beq cr
+.0ac0	c9 2c		cmp #$2c	        cmp #","
+.0ac2	d0 12		bne $0ad6	        bne keep
+.0ac4	24 25		bit $25		        bit ZP_TMP+1
+.0ac6	10 0e		bpl $0ad6	        bpl keep                ; LINPUT keeps a comma
+.0ac8	50 20		bvc $0aea	        bvc done                ; the rest is the next field
+.0aca					skip
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHRIN.rec_id)]
+.0aca	20 00 00	jsr $0000	        jsr @w 0
+.0acd	c9 0d		cmp #$0d	        cmp #13
+.0acf	d0 f9		bne $0aca	        bne skip
+.0ad1					cr
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0ad1	20 00 00	jsr $0000	        jsr @w 0
+.0ad4	80 14		bra $0aea	        bra done
+.0ad6	aa		tax		keep    tax
+.0ad7	a5 24		lda $24		        lda ZP_TMP
+.0ad9	d2 28		cmp ($28)	        cmp (ZP_DST)            ; full: drop the character
+.0adb	f0 dc		beq $0ab9	        beq next
+.0add	8a		txa		        txa
+.0ade	92 22		sta ($22)	        sta (ZP_PTR)
+.0ae0	e6 22		inc $22		        inc ZP_PTR
+.0ae2	d0 02		bne $0ae6	        bne +
+.0ae4	e6 23		inc $23		        inc ZP_PTR+1
+.0ae6	e6 24		inc $24		+       inc ZP_TMP
+.0ae8	80 cf		bra $0ab9	        bra next
+.0aea	a5 24		lda $24		done    lda ZP_TMP
+.0aec	a0 01		ldy #$01	        ldy #1
+.0aee	91 28		sta ($28),y	        sta (ZP_DST),y
+.0af0	fa		plx		        plx
+.0af1	a5 28		lda $28		        lda ZP_DST
+.0af3	a4 29		ldy $29		        ldy ZP_DST+1
+.0af5	60		rts		        rts
+.0af6					rec_fix
+>0af6	05 05 23			        .byte f[0], f[1], f[2]
+>0af9	0a 05 23			        .byte f[0], f[1], f[2]
+>0afc	27 05 26			        .byte f[0], f[1], f[2]
+>0aff	38 05 26			        .byte f[0], f[1], f[2]
+>0b02	3f 05 23			        .byte f[0], f[1], f[2]
+.0b05					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\T-FILE.ASM
+
+.0b05					T_OPEN
+=147					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b05	03				        .byte rec_fix - rec_code
+>0b06	01				        .byte (rec_end - rec_fix) / 3
+.0b07					rec_code
+=[(1,5,158)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FILE.rec_id)]
+.0b07	20 00 00	jsr $0000	        jsr @w 0
+.0b0a					rec_fix
+>0b0a	01 05 9e			        .byte f[0], f[1], f[2]
+.0b0d					rec_end
+.0b0d					T_CLOSE
+=148					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b0d	03				        .byte rec_fix - rec_code
+>0b0e	01				        .byte (rec_end - rec_fix) / 3
+.0b0f					rec_code
+=[(1,5,158)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FILE.rec_id)]
+.0b0f	20 7e 00	jsr $007e	        jsr @w R_FILE.close - R_FILE.rec_code
+.0b12					rec_fix
+>0b12	01 05 9e			        .byte f[0], f[1], f[2]
+.0b15					rec_end
+.0b15					T_CHKOUT
+=149					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b15	03				        .byte rec_fix - rec_code
+>0b16	01				        .byte (rec_end - rec_fix) / 3
+.0b17					rec_code
+=[(1,5,158)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FILE.rec_id)]
+.0b17	20 8c 00	jsr $008c	        jsr @w R_FILE.chkout - R_FILE.rec_code
+.0b1a					rec_fix
+>0b1a	01 05 9e			        .byte f[0], f[1], f[2]
+.0b1d					rec_end
+.0b1d					T_CLRCHN
+=150					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b1d	03				        .byte rec_fix - rec_code
+>0b1e	01				        .byte (rec_end - rec_fix) / 3
+.0b1f					rec_code
+=[(1,5,158)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FILE.rec_id)]
+.0b1f	20 9c 00	jsr $009c	        jsr @w R_FILE.clrchn - R_FILE.rec_code
+.0b22					rec_fix
+>0b22	01 05 9e			        .byte f[0], f[1], f[2]
+.0b25					rec_end
+.0b25					T_FOPEN
+=151					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b25	03				        .byte rec_fix - rec_code
+>0b26	01				        .byte (rec_end - rec_fix) / 3
+.0b27					rec_code
+=[(1,5,159)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FIN.rec_id)]
+.0b27	20 00 00	jsr $0000	        jsr @w 0
+.0b2a					rec_fix
+>0b2a	01 05 9f			        .byte f[0], f[1], f[2]
+.0b2d					rec_end
+.0b2d					T_CHKIN
+=152					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b2d	03				        .byte rec_fix - rec_code
+>0b2e	01				        .byte (rec_end - rec_fix) / 3
+.0b2f					rec_code
+=[(1,5,159)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FIN.rec_id)]
+.0b2f	20 17 00	jsr $0017	        jsr @w R_FIN.chkin - R_FIN.rec_code
+.0b32					rec_fix
+>0b32	01 05 9f			        .byte f[0], f[1], f[2]
+.0b35					rec_end
+.0b35					T_FINPUT
+=153					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b35	03				        .byte rec_fix - rec_code
+>0b36	01				        .byte (rec_end - rec_fix) / 3
+.0b37					rec_code
+=[(1,5,159)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FIN.rec_id)]
+.0b37	20 6b 00	jsr $006b	        jsr @w R_FIN.field - R_FIN.rec_code
+.0b3a					rec_fix
+>0b3a	01 05 9f			        .byte f[0], f[1], f[2]
+.0b3d					rec_end
+.0b3d					T_FLINPUT
+=154					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b3d	03				        .byte rec_fix - rec_code
+>0b3e	01				        .byte (rec_end - rec_fix) / 3
+.0b3f					rec_code
+=[(1,5,159)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FIN.rec_id)]
+.0b3f	20 6d 00	jsr $006d	        jsr @w R_FIN.line - R_FIN.rec_code
+.0b42					rec_fix
+>0b42	01 05 9f			        .byte f[0], f[1], f[2]
+.0b45					rec_end
+.0b45					T_EOF
+=155					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b45	03				        .byte rec_fix - rec_code
+>0b46	01				        .byte (rec_end - rec_fix) / 3
+.0b47					rec_code
+=[(1,5,159)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FIN.rec_id)]
+.0b47	20 29 00	jsr $0029	        jsr @w R_FIN.eof - R_FIN.rec_code
+.0b4a					rec_fix
+>0b4a	01 05 9f			        .byte f[0], f[1], f[2]
+.0b4d					rec_end
+.0b4d					T_READ
+=156					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b4d	03				        .byte rec_fix - rec_code
+>0b4e	01				        .byte (rec_end - rec_fix) / 3
+.0b4f					rec_code
+=[(1,5,160)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FREAD.rec_id)]
+.0b4f	20 00 00	jsr $0000	        jsr @w 0
+.0b52					rec_fix
+>0b52	01 05 a0			        .byte f[0], f[1], f[2]
+.0b55					rec_end
+.0b55					T_WRITE
+=157					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b55	03				        .byte rec_fix - rec_code
+>0b56	01				        .byte (rec_end - rec_fix) / 3
+.0b57					rec_code
+=[(1,5,161)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FWRITE.rec_id)]
+.0b57	20 00 00	jsr $0000	        jsr @w 0
+.0b5a					rec_fix
+>0b5a	01 05 a1			        .byte f[0], f[1], f[2]
+.0b5d					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+
+;******  Processing file: C:\dev\UXCBASIC\tpl\R-FILE.ASM
+
+.0b5d					R_FILE
+=158					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0b5d	a2				        .byte rec_fix - rec_code
+>0b5e	12				        .byte (rec_end - rec_fix) / 3
+.0b5f					rec_code
+.0b5f	da		phx		        phx
+.0b60	85 22		sta $22		        sta ZP_PTR
+.0b62	84 23		sty $23		        sty ZP_PTR+1
+.0b64	a9 0f		lda #$0f	        lda #15                 ; the command channel, opened once
+=[(8,5,47)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_LKUPLA.rec_id)]
+.0b66	20 00 00	jsr $0000	        jsr @w 0
+.0b69	90 12		bcc $0b7d	        bcc named
+.0b6b	a9 00		lda #$00	        lda #0
+=[(8,5,47),(15,5,41)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_SETNAM.rec_id)]
+.0b6d	20 00 00	jsr $0000	        jsr @w 0
+.0b70	a9 0f		lda #$0f	        lda #15
+.0b72	a2 08		ldx #$08	        ldx #8
+.0b74	a8		tay		        tay
+=[(8,5,47),(15,5,41),(23,5,40)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_SETLFS.rec_id)]
+.0b75	20 00 00	jsr $0000	        jsr @w 0
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_OPEN.rec_id)]
+.0b78	20 00 00	jsr $0000	        jsr @w 0
+.0b7b	b0 5b		bcs $0bd8	        bcs fail
+.0b7d	a9 03		lda #$03	named   lda #3                  ; the first logical file the KERNAL does not know
+.0b7f	85 24		sta $24		free    sta ZP_TMP
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_LKUPLA.rec_id)]
+.0b81	20 00 00	jsr $0000	        jsr @w 0
+.0b84	b0 09		bcs $0b8f	        bcs found
+.0b86	a5 24		lda $24		        lda ZP_TMP
+.0b88	1a		inc a		        inc a
+.0b89	c9 0f		cmp #$0f	        cmp #15
+.0b8b	d0 f2		bne $0b7f	        bne free
+.0b8d	80 49		bra $0bd8	        bra fail
+.0b8f	a0 01		ldy #$01	found   ldy #1
+.0b91	b1 22		lda ($22),y	        lda (ZP_PTR),y          ; the name's length
+.0b93	48		pha		        pha
+.0b94	18		clc		        clc                     ; X/Y = its text
+.0b95	a5 22		lda $22		        lda ZP_PTR
+.0b97	69 02		adc #$02	        adc #2
+.0b99	aa		tax		        tax
+.0b9a	a5 23		lda $23		        lda ZP_PTR+1
+.0b9c	69 00		adc #$00	        adc #0
+.0b9e	a8		tay		        tay
+.0b9f	68		pla		        pla
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_SETNAM.rec_id)]
+.0ba0	20 00 00	jsr $0000	        jsr @w 0
+.0ba3	a5 24		lda $24		        lda ZP_TMP
+.0ba5	a2 08		ldx #$08	        ldx #8
+.0ba7	a8		tay		        tay
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_SETLFS.rec_id)]
+.0ba8	20 00 00	jsr $0000	        jsr @w 0
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_OPEN.rec_id)]
+.0bab	20 00 00	jsr $0000	        jsr @w 0
+.0bae	b0 28		bcs $0bd8	        bcs fail
+.0bb0	a2 0f		ldx #$0f	        ldx #15                 ; the drive's status: "00, OK" or an error number
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHKIN.rec_id)]
+.0bb2	20 00 00	jsr $0000	        jsr @w 0
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHRIN.rec_id)]
+.0bb5	20 00 00	jsr $0000	        jsr @w 0
+.0bb8	48		pha		        pha
+.0bb9					skip
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHRIN.rec_id)]
+.0bb9	20 00 00	jsr $0000	        jsr @w 0
+.0bbc	c9 0d		cmp #$0d	        cmp #13
+.0bbe	f0 05		beq $0bc5	        beq read
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_READST.rec_id)]
+.0bc0	20 00 00	jsr $0000	        jsr @w 0
+.0bc3	f0 f4		beq $0bb9	        beq skip
+.0bc5					read
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CLRCHN.rec_id)]
+.0bc5	20 00 00	jsr $0000	        jsr @w 0
+.0bc8	68		pla		        pla
+.0bc9	c9 30		cmp #$30	        cmp #"0"
+.0bcb	d0 06		bne $0bd3	        bne shut
+.0bcd	a5 24		lda $24		        lda ZP_TMP
+.0bcf	a0 00		ldy #$00	        ldy #0
+.0bd1	fa		plx		        plx
+.0bd2	60		rts		        rts
+.0bd3	a5 24		lda $24		shut    lda ZP_TMP
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CLOSE.rec_id)]
+.0bd5	20 00 00	jsr $0000	        jsr @w 0
+.0bd8	a9 ff		lda #$ff	fail    lda #$ff
+.0bda	a8		tay		        tay
+.0bdb	fa		plx		        plx
+.0bdc	60		rts		        rts
+.0bdd	c9 03		cmp #$03	close   cmp #3
+.0bdf	90 09		bcc $0bea	        bcc done
+.0be1	c9 0f		cmp #$0f	        cmp #15
+.0be3	b0 05		bcs $0bea	        bcs done
+.0be5	da		phx		        phx
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CLOSE.rec_id)]
+.0be6	20 00 00	jsr $0000	        jsr @w 0
+.0be9	fa		plx		        plx
+.0bea	60		rts		done    rts
+.0beb	c9 03		cmp #$03	chkout  cmp #3
+.0bed	90 fb		bcc $0bea	        bcc done
+.0bef	da		phx		        phx
+.0bf0	aa		tax		        tax
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHKOUT.rec_id)]
+.0bf1	20 00 00	jsr $0000	        jsr @w 0
+.0bf4	fa		plx		        plx
+.0bf5	b0 01		bcs $0bf8	        bcs bad
+.0bf7	60		rts		        rts
+.0bf8					bad
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_EFILE.rec_id)]
+.0bf8	4c 00 00	jmp $0000	        jmp @w 0
+.0bfb	da		phx		clrchn  phx
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CLRCHN.rec_id)]
+.0bfc	20 00 00	jsr $0000	        jsr @w 0
+.0bff	fa		plx		        plx
+.0c00	60		rts		        rts
+.0c01					rec_fix
+>0c01	08 05 2f			        .byte f[0], f[1], f[2]
+>0c04	0f 05 29			        .byte f[0], f[1], f[2]
+>0c07	17 05 28			        .byte f[0], f[1], f[2]
+>0c0a	1a 05 2a			        .byte f[0], f[1], f[2]
+>0c0d	23 05 2f			        .byte f[0], f[1], f[2]
+>0c10	42 05 29			        .byte f[0], f[1], f[2]
+>0c13	4a 05 28			        .byte f[0], f[1], f[2]
+>0c16	4d 05 2a			        .byte f[0], f[1], f[2]
+>0c19	54 05 2c			        .byte f[0], f[1], f[2]
+>0c1c	57 05 26			        .byte f[0], f[1], f[2]
+>0c1f	5b 05 26			        .byte f[0], f[1], f[2]
+>0c22	62 05 27			        .byte f[0], f[1], f[2]
+>0c25	67 05 2e			        .byte f[0], f[1], f[2]
+>0c28	77 05 2b			        .byte f[0], f[1], f[2]
+>0c2b	88 05 2b			        .byte f[0], f[1], f[2]
+>0c2e	93 05 2d			        .byte f[0], f[1], f[2]
+>0c31	9a 05 57			        .byte f[0], f[1], f[2]
+>0c34	9e 05 2e			        .byte f[0], f[1], f[2]
+.0c37					rec_end
+.0c37					R_FIN
+=159					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0c37	d5				        .byte rec_fix - rec_code
+>0c38	13				        .byte (rec_end - rec_fix) / 3
+.0c39					rec_code
+=[(1,5,158)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FILE.rec_id)]
+.0c39	20 00 00	jsr $0000	        jsr @w 0
+.0c3c	c0 00		cpy #$00	        cpy #0
+.0c3e	d0 0f		bne $0c4f	        bne +
+.0c40	da		phx		        phx
+.0c41	48		pha		        pha
+=[(1,5,158),(10,4,0)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0c42	20 17 00	jsr $0017	        jsr @w chkin - rec_code
+=[(1,5,158),(10,4,0),(13,4,0)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0c45	20 54 00	jsr $0054	        jsr @w fetch - rec_code
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CLRCHN.rec_id)]
+.0c48	20 00 00	jsr $0000	        jsr @w 0
+.0c4b	68		pla		        pla
+.0c4c	a0 00		ldy #$00	        ldy #0
+.0c4e	fa		plx		        plx
+.0c4f	60		rts		+       rts
+.0c50	85 2a		sta $2a		chkin   sta ZP_FILE
+.0c52	c9 0f		cmp #$0f	        cmp #15
+.0c54	b0 09		bcs $0c5f	        bcs bad
+.0c56	da		phx		        phx
+.0c57	aa		tax		        tax
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHKIN.rec_id)]
+.0c58	20 00 00	jsr $0000	        jsr @w 0
+.0c5b	fa		plx		        plx
+.0c5c	b0 01		bcs $0c5f	        bcs bad
+.0c5e	60		rts		        rts
+.0c5f					bad
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_EFILE.rec_id)]
+.0c5f	4c 00 00	jmp $0000	        jmp @w 0
+.0c62	38		sec		eof     sec
+.0c63	e9 03		sbc #$03	        sbc #3
+.0c65	c9 0c		cmp #$0c	        cmp #12
+.0c67	b0 07		bcs $0c70	        bcs +                   ; not a file handle: nothing to read
+.0c69	da		phx		        phx
+.0c6a	aa		tax		        tax
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0c6b	bd c9 00	lda $00c9,x	        lda @w state - rec_code, x
+.0c6e	fa		plx		        plx
+.0c6f	0a		asl a		        asl a
+.0c70	60		rts		+       rts
+.0c71	a6 2a		ldx $2a		getc    ldx ZP_FILE
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0c73	bc ba 00	ldy $00ba,x	        ldy @w ahead-3 - rec_code, x
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0c76	bd c6 00	lda $00c6,x	        lda @w state-3 - rec_code, x
+.0c79	0a		asl a		        asl a                   ; C: nothing held. N: the byte held is the last
+.0c7a	b0 10		bcs $0c8c	        bcs +
+.0c7c	30 07		bmi $0c85	        bmi last
+.0c7e	5a		phy		        phy
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0c7f	20 54 00	jsr $0054	        jsr @w fetch - rec_code
+.0c82	7a		ply		        ply
+.0c83	80 05		bra $0c8a	        bra out
+.0c85	a9 80		lda #$80	last    lda #$80
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0c87	9d c6 00	sta $00c6,x	        sta @w state-3 - rec_code, x
+.0c8a	98		tya		out     tya
+.0c8b	18		clc		        clc
+.0c8c	60		rts		+       rts
+.0c8d					fetch
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHRIN.rec_id)]
+.0c8d	20 00 00	jsr $0000	        jsr @w 0
+.0c90	a6 2a		ldx $2a		        ldx ZP_FILE
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0c92	9d ba 00	sta $00ba,x	        sta @w ahead-3 - rec_code, x
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_READST.rec_id)]
+.0c95	20 00 00	jsr $0000	        jsr @w 0
+.0c98	a6 2a		ldx $2a		        ldx ZP_FILE
+.0c9a	89 bf		bit #$bf	        bit #$bf
+.0c9c	f0 02		beq $0ca0	        beq +
+.0c9e	a9 80		lda #$80	        lda #$80
+.0ca0					+
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0ca0	9d c6 00	sta $00c6,x	        sta @w state-3 - rec_code, x
+.0ca3	60		rts		        rts
+.0ca4	38		sec		field   sec
+>0ca5	24				        .byte $24               ; BIT zp: skips the clc
+.0ca6	18		clc		line    clc
+.0ca7	66 25		ror $25		        ror ZP_TMP+1            ; bit 7: a comma ends it
+.0ca9	85 28		sta $28		        sta ZP_DST
+.0cab	84 29		sty $29		        sty ZP_DST+1
+.0cad	da		phx		        phx
+.0cae	b2 28		lda ($28)	        lda (ZP_DST)            ; the room left
+.0cb0	85 22		sta $22		        sta ZP_PTR
+.0cb2	64 24		stz $24		        stz ZP_TMP              ; the length
+.0cb4					next
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0cb4	20 38 00	jsr $0038	        jsr @w getc - rec_code
+.0cb7	b0 31		bcs $0cea	        bcs done
+.0cb9	c9 0d		cmp #$0d	        cmp #13
+.0cbb	f0 1c		beq $0cd9	        beq cr
+.0cbd	c9 0a		cmp #$0a	        cmp #10
+.0cbf	f0 29		beq $0cea	        beq done
+.0cc1	c9 2c		cmp #$2c	        cmp #","
+.0cc3	d0 04		bne $0cc9	        bne keep
+.0cc5	24 25		bit $25		        bit ZP_TMP+1
+.0cc7	30 21		bmi $0cea	        bmi done
+.0cc9	a4 22		ldy $22		keep    ldy ZP_PTR
+.0ccb	f0 e7		beq $0cb4	        beq next                ; full: drop the byte
+.0ccd	c6 22		dec $22		        dec ZP_PTR
+.0ccf	a4 24		ldy $24		        ldy ZP_TMP
+.0cd1	c8		iny		        iny
+.0cd2	c8		iny		        iny
+.0cd3	91 28		sta ($28),y	        sta (ZP_DST),y
+.0cd5	e6 24		inc $24		        inc ZP_TMP
+.0cd7	80 db		bra $0cb4	        bra next
+.0cd9	a6 2a		ldx $2a		cr      ldx ZP_FILE             ; drop an LF after the CR
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0cdb	bd c6 00	lda $00c6,x	        lda @w state-3 - rec_code, x
+.0cde	30 0a		bmi $0cea	        bmi done
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0ce0	bd ba 00	lda $00ba,x	        lda @w ahead-3 - rec_code, x
+.0ce3	c9 0a		cmp #$0a	        cmp #10
+.0ce5	d0 03		bne $0cea	        bne done
+=					        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_SELF, 0)]
+.0ce7	20 38 00	jsr $0038	        jsr @w getc - rec_code
+.0cea	a5 24		lda $24		done    lda ZP_TMP
+.0cec	a0 01		ldy #$01	        ldy #1
+.0cee	91 28		sta ($28),y	        sta (ZP_DST),y
+.0cf0	fa		plx		        plx
+.0cf1	a5 28		lda $28		        lda ZP_DST
+.0cf3	a4 29		ldy $29		        ldy ZP_DST+1
+.0cf5	60		rts		        rts
+>0cf6					ahead   .fill 12                ; per handle 3-14: the byte held back
+>0d02					state   .fill 12
+.0d0e					rec_fix
+>0d0e	01 05 9e			        .byte f[0], f[1], f[2]
+>0d11	0a 04 00			        .byte f[0], f[1], f[2]
+>0d14	0d 04 00			        .byte f[0], f[1], f[2]
+>0d17	10 05 2e			        .byte f[0], f[1], f[2]
+>0d1a	20 05 2c			        .byte f[0], f[1], f[2]
+>0d1d	27 05 57			        .byte f[0], f[1], f[2]
+>0d20	33 04 00			        .byte f[0], f[1], f[2]
+>0d23	3b 04 00			        .byte f[0], f[1], f[2]
+>0d26	3e 04 00			        .byte f[0], f[1], f[2]
+>0d29	47 04 00			        .byte f[0], f[1], f[2]
+>0d2c	4f 04 00			        .byte f[0], f[1], f[2]
+>0d2f	55 05 26			        .byte f[0], f[1], f[2]
+>0d32	5a 04 00			        .byte f[0], f[1], f[2]
+>0d35	5d 05 27			        .byte f[0], f[1], f[2]
+>0d38	68 04 00			        .byte f[0], f[1], f[2]
+>0d3b	7c 04 00			        .byte f[0], f[1], f[2]
+>0d3e	a3 04 00			        .byte f[0], f[1], f[2]
+>0d41	a8 04 00			        .byte f[0], f[1], f[2]
+>0d44	af 04 00			        .byte f[0], f[1], f[2]
+.0d47					rec_end
+.0d47					R_FREAD
+=160					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0d47	44				        .byte rec_fix - rec_code
+>0d48	03				        .byte (rec_end - rec_fix) / 3
+.0d49					rec_code
+.0d49	85 24		sta $24		        sta ZP_TMP              ; the max
+.0d4b	84 25		sty $25		        sty ZP_TMP+1
+.0d4d	ca		dex		        dex                     ; the address
+.0d4e	ca		dex		        dex
+.0d4f	b5 30		lda $30,x	        lda ESTK,x
+.0d51	85 22		sta $22		        sta ZP_PTR
+.0d53	b5 31		lda $31,x	        lda ESTK+1,x
+.0d55	85 23		sta $23		        sta ZP_PTR+1
+.0d57	ca		dex		        dex                     ; the handle
+.0d58	ca		dex		        dex
+.0d59	b5 30		lda $30,x	        lda ESTK,x
+=[(19,5,159)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FIN.rec_id)]
+.0d5b	20 17 00	jsr $0017	        jsr @w R_FIN.chkin - R_FIN.rec_code
+.0d5e	da		phx		        phx
+.0d5f	64 28		stz $28		        stz ZP_DST              ; the count
+.0d61	64 29		stz $29		        stz ZP_DST+1
+.0d63	a5 28		lda $28		next    lda ZP_DST
+.0d65	c5 24		cmp $24		        cmp ZP_TMP
+.0d67	d0 06		bne $0d6f	        bne more
+.0d69	a5 29		lda $29		        lda ZP_DST+1
+.0d6b	c5 25		cmp $25		        cmp ZP_TMP+1
+.0d6d	f0 15		beq $0d84	        beq done
+.0d6f					more
+=[(19,5,159),(39,5,159)]		        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FIN.rec_id)]
+.0d6f	20 38 00	jsr $0038	        jsr @w R_FIN.getc - R_FIN.rec_code
+.0d72	b0 10		bcs $0d84	        bcs done
+.0d74	92 22		sta ($22)	        sta (ZP_PTR)
+.0d76	e6 22		inc $22		        inc ZP_PTR
+.0d78	d0 02		bne $0d7c	        bne +
+.0d7a	e6 23		inc $23		        inc ZP_PTR+1
+.0d7c	e6 28		inc $28		+       inc ZP_DST
+.0d7e	d0 e3		bne $0d63	        bne next
+.0d80	e6 29		inc $29		        inc ZP_DST+1
+.0d82	80 df		bra $0d63	        bra next
+.0d84					done
+=[(19,5,159),(39,5,159),(60,5,46)]	        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CLRCHN.rec_id)]
+.0d84	20 00 00	jsr $0000	        jsr @w 0
+.0d87	fa		plx		        plx
+.0d88	a5 28		lda $28		        lda ZP_DST
+.0d8a	a4 29		ldy $29		        ldy ZP_DST+1
+.0d8c	60		rts		        rts
+.0d8d					rec_fix
+>0d8d	13 05 9f			        .byte f[0], f[1], f[2]
+>0d90	27 05 9f			        .byte f[0], f[1], f[2]
+>0d93	3c 05 2e			        .byte f[0], f[1], f[2]
+.0d96					rec_end
+.0d96					R_FWRITE
+=161					rec_id  = len(tpl_all)
+=					        tpl_all ::= tpl_all .. [*]
+=[]					        tpl_fix ::= []
+>0d96	36				        .byte rec_fix - rec_code
+>0d97	03				        .byte (rec_end - rec_fix) / 3
+.0d98					rec_code
+.0d98	85 24		sta $24		        sta ZP_TMP              ; the count left
+.0d9a	84 25		sty $25		        sty ZP_TMP+1
+.0d9c	ca		dex		        dex                     ; the address
+.0d9d	ca		dex		        dex
+.0d9e	b5 30		lda $30,x	        lda ESTK,x
+.0da0	85 22		sta $22		        sta ZP_PTR
+.0da2	b5 31		lda $31,x	        lda ESTK+1,x
+.0da4	85 23		sta $23		        sta ZP_PTR+1
+.0da6	ca		dex		        dex                     ; the handle
+.0da7	ca		dex		        dex
+.0da8	b5 30		lda $30,x	        lda ESTK,x
+=[(19,5,158)]				        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, R_FILE.rec_id)]
+.0daa	20 8c 00	jsr $008c	        jsr @w R_FILE.chkout - R_FILE.rec_code
+.0dad	da		phx		        phx
+.0dae	a5 24		lda $24		next    lda ZP_TMP
+.0db0	05 25		ora $25		        ora ZP_TMP+1
+.0db2	f0 15		beq $0dc9	        beq done
+.0db4	b2 22		lda ($22)	        lda (ZP_PTR)
+=[(19,5,158),(31,5,35)]			        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CHROUT.rec_id)]
+.0db6	20 00 00	jsr $0000	        jsr @w 0
+.0db9	e6 22		inc $22		        inc ZP_PTR
+.0dbb	d0 02		bne $0dbf	        bne +
+.0dbd	e6 23		inc $23		        inc ZP_PTR+1
+.0dbf	a5 24		lda $24		+       lda ZP_TMP
+.0dc1	d0 02		bne $0dc5	        bne +
+.0dc3	c6 25		dec $25		        dec ZP_TMP+1
+.0dc5	c6 24		dec $24		+       dec ZP_TMP
+.0dc7	80 e5		bra $0dae	        bra next
+.0dc9					done
+=[(19,5,158),(31,5,35),(50,5,46)]	        tpl_fix ::= tpl_fix .. [(* + 1 - rec_code, F_REC, S_CLRCHN.rec_id)]
+.0dc9	20 00 00	jsr $0000	        jsr @w 0
+.0dcc	fa		plx		        plx
+.0dcd	60		rts		        rts
+.0dce					rec_fix
+>0dce	13 05 9e			        .byte f[0], f[1], f[2]
+>0dd1	1f 05 23			        .byte f[0], f[1], f[2]
+>0dd4	32 05 2e			        .byte f[0], f[1], f[2]
+.0dd7					rec_end
+
+;******  Return to file: C:\dev\UXCBASIC\tpl\UXC.TPL.ASM
+
+=162					tpl_count = len(tpl_all)
+>0dd7	08 00 16 00 23 00 2b 00		index   .word tpl_all
+>0ddf	32 00 3e 00 46 00 54 00 5e 00 62 00 6a 00 78 00
+>0def	80 00 86 00 8e 00 96 00 9e 00 a1 00 ad 00 c1 00
+>0dff	c9 00 d1 00 d9 00 e3 00 eb 00 f3 00 ff 00 0b 01
+>0e0f	13 01 1b 01 3d 01 a0 01 aa 01 d7 01 ec 01 01 02
+>0e1f	06 02 0b 02 10 02 15 02 1a 02 1f 02 24 02 29 02
+>0e2f	2e 02 33 02 38 02 3d 02 42 02 56 02 dc 02 0c 03
+>0e3f	14 03 1b 03 28 03 31 03 42 03 48 03 54 03 5a 03
+>0e4f	66 03 6c 03 78 03 86 03 98 03 a6 03 b8 03 c0 03
+>0e5f	c8 03 d4 03 d9 03 e8 03 f1 03 fe 03 07 04 0d 04
+>0e6f	1b 04 24 04 2f 04 34 04 3b 04 42 04 4b 04 7b 04
+>0e7f	bd 04 4e 05 67 05 7d 05 93 05 9b 05 a2 05 a9 05
+>0e8f	b0 05 b7 05 be 05 c2 05 c8 05 d6 05 dd 05 e5 05
+>0e9f	f2 05 01 06 0f 06 1f 06 27 06 2f 06 45 06 4d 06
+>0eaf	55 06 66 06 77 06 90 06 99 06 a5 06 b6 06 cd 06
+>0ebf	da 06 e9 06 f8 06 10 07 34 07 55 07 5f 07 76 07
+>0ecf	8f 07 97 07 ae 07 b7 07 c0 07 ca 07 d9 07 e9 07
+>0edf	ff 07 07 08 1d 08 25 08 2e 08 37 08 40 08 49 08
+>0eef	51 08 92 08 df 08 39 09 be 09 14 0a 91 0a 05 0b
+>0eff	0d 0b 15 0b 1d 0b 25 0b 2d 0b 35 0b 3d 0b 45 0b
+>0f0f	4d 0b 55 0b 5d 0b 37 0c 47 0d 96 0d
+
+;******  End of listing

@@ -1,0 +1,2 @@
+DIM I, S
+FOR I = 1 TO 5 STEP S

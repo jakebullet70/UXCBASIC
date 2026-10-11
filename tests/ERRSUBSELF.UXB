@@ -1,0 +1,3 @@
+SUB F(N)
+  CALL F(1)
+ENDSUB

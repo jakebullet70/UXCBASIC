@@ -1,0 +1,3 @@
+DIM A$ * 5, N%
+PRINT "A" + A$
+N% = A$

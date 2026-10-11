@@ -1,0 +1,32 @@
+' STRRET -- a SUB returns a STRING, as the address of the block that holds it
+DIM G$ * 20
+DIM A$ * 20
+SUB FIRST3$(S$)
+  RETURN MID$(S$, 1, 3)
+ENDSUB
+SUB SAME$(S$)
+  RETURN S$
+ENDSUB
+SUB NAMED$(N)
+  IF N = 1 THEN RETURN "ONE"
+  IF N = 2 THEN RETURN "TWO"
+ENDSUB
+SUB WRAP(T AS STRING) AS STRING
+  RETURN "[" + T + "]"
+ENDSUB
+SUB SHOUT(T$)
+  T$ = T$ + "!"
+ENDSUB
+G$ = "HELLO"
+A$ = FIRST3$(G$)
+PRINT A$; LEN(A$)
+PRINT FIRST3$("WORLD") + "!"
+PRINT SAME$(G$)
+PRINT NAMED$(1); NAMED$(2); "<"; NAMED$(3); ">"
+PRINT WRAP("A") + WRAP("B")
+PRINT WRAP(WRAP("C"))
+IF FIRST3$(G$) = "HEL" THEN PRINT "EQ"
+SHOUT(SAME$(G$))
+PRINT G$
+A$ = WRAP(FIRST3$(G$))
+PRINT A$

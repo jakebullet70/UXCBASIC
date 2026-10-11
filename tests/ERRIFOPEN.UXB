@@ -1,0 +1,3 @@
+DIM A
+IF A = 1
+PRINT 1

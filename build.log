@@ -1,0 +1,9 @@
+MKHELP: 25 topics, 1 examples, 40 of 210 index rows, 462 of 6302 index characters
+  build_basl: staged BASLOAD-GPC/build/BASLOAD-GPC.PRG -> source/drive/ (1005 bytes)
+  build_basl: OK -- source/drive/UXC.SRC.PRG (47302 bytes, loads $0801) tokenised from source/drive/UXC.BASL
+  compiled UXC.SRC.PRG -> UXC.PRG (6968 bytes, SHARED)
+  DEAD CODE:   27 LINES REMOVED,  226 BYTES SAVED
+build: build_basl.py took 31 s
+build: compile_shared.py took 39 s
+build: UXC.PRG 6968 bytes, 71 s
+build: total 71 s

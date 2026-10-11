@@ -1,0 +1,4 @@
+DIM K
+K = GETKEY()
+PRINT K
+PRINT GETKEY() + 1

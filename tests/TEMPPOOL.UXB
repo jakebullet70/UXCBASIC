@@ -1,0 +1,22 @@
+' TEMPPOOL -- SUBs of one level share one pool of temps; a caller's temps outlive its calls
+DIM G$ * 20
+SUB INNER$(S$)
+  RETURN "(" + S$ + ")"
+ENDSUB
+SUB OUTER$(S$)
+  RETURN "<" + INNER$(S$) + ">"
+ENDSUB
+SUB LEFTSIDE$(S$)
+  RETURN "L" + S$
+ENDSUB
+SUB RIGHTSIDE$(S$)
+  RETURN "R" + S$
+ENDSUB
+SUB TOP$(S$)
+  RETURN OUTER$(S$) + "/" + LEFTSIDE$(S$)
+ENDSUB
+G$ = "X"
+PRINT OUTER$(G$)
+PRINT LEFTSIDE$("A") + RIGHTSIDE$("B")
+PRINT TOP$(G$)
+PRINT INNER$(G$) + OUTER$("Y") + INNER$("Z")
