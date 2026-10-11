@@ -1,0 +1,30 @@
+# Build and test output. build.py empties build/ on every build.
+build/
+build.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Written by tpl/MKTPL.PY on every build.
+tpl/UXC.TPL.BIN
+tpl/UXC.TPL.BL
+tpl/UXC.TPL.IDS
+tpl/UXC.TPL.LST
+
+# Written by help/MKHELP.PY on every build.
+help/HELP-TXT/
+
+# The GPC listings of a build.
+*.MAP
+*.DEAD
+*.SRC.SYM
+*.SRC.PRG
+
+# The compile relay's files on the user drive, rewritten by each compile.
+disk/UXC.INPUT
+disk/UXC.RESULT
+
+# Claude Code per-machine settings.
+.claude/settings.local.json
+disk/STR-TEST.PRG
